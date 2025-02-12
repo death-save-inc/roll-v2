@@ -1,5 +1,9 @@
 const modules = [
     'test',
+    'renderable',
+    'shaders/dither',
+    'shaders/ditherPass',
+    'scene'
 ]
 
 const loadScript=()=> {
