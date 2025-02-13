@@ -7,7 +7,7 @@ export function DitherPassGen({ THREE, Pass, FullScreenQuad }) {
 
     constructor({
       resolution = new THREE.Vector2(0, 0),
-      bias = 0.025
+      bias = 0
     } = {}) {
       super();
 
@@ -26,7 +26,8 @@ export function DitherPassGen({ THREE, Pass, FullScreenQuad }) {
     }
 
     render(renderer, writeBuffer, readBuffer) {
-    //   this._fsQuad.material.uniforms['tDiffuse'].value = readBuffer.texture;
+      this._fsQuad.material.uniforms['textureSampler'].value = readBuffer.texture
+
       if (this.renderToScreen) {
         renderer.setRenderTarget(null);
       } else {

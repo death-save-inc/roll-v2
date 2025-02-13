@@ -3,6 +3,7 @@ const modules = [
     'renderable',
     'shaders/dither',
     'shaders/ditherPass',
+    'model-loader',
     'scene'
 ]
 

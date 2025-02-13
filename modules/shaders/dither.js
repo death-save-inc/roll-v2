@@ -5,10 +5,9 @@ export const DitherShader = {
 	name: 'DitherShader',
 
 	uniforms: {
+    textureSampler: { value: null },
         resolution: new THREE.Uniform( new THREE.Vector2(window.innerWidth, window.innerHeight)),
-        matrixSize: {value:8.0},
         bias: {value:0.4},
-        threshold: {value: 0.2}
 	},
 
 	vertexShader: /* glsl */`
@@ -24,11 +23,12 @@ export const DitherShader = {
 
 	fragmentShader: /* glsl */`
     precision highp float;
-
+      
+    uniform float matrixSize;
     uniform float bias;
 
     // Samplers
-    in vec2 vUv;
+    varying vec2 vUv;
     uniform sampler2D textureSampler;
 
     // Parameters
@@ -54,23 +54,22 @@ export const DitherShader = {
       int y = int(uv.y * resolution.y) % 8;
       threshold = bayerMatrix8x8[y * 8 + x];
     
-      if (lum < 0.25 + bias) {
-          color = vec3(0.5);
+      if (lum < threshold + bias) {
+          color = vec3(0.0);
       } else {
-          color = vec3(0); 
+          color = vec3(lum); 
       }
     
       return color;
     }
     
-    
     void main(void) {
         vec4 color = texture(textureSampler, vUv);
         float lum = dot(vec3(0.2126, 0.7152, 0.0722), color.rgb);
-        color.rgb = orderedDither(vUv, lum);
+        color.rgb = orderedDither(vUv, lum + 0.25);
     
-        gl_FragColor = vec4(0.0);
+      gl_FragColor = color;
     }
-    `
+  `
 
 };
