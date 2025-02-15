@@ -1,4 +1,4 @@
-import { DitherShader } from './dither.js'
+import { DitherShader } from './dither-shader.js'
 
 export function DitherPassGen({ THREE, Pass, FullScreenQuad }) {
 

@@ -66,7 +66,7 @@ export const DitherShader = {
     void main(void) {
         vec4 color = texture(textureSampler, vUv);
         float lum = dot(vec3(0.2126, 0.7152, 0.0722), color.rgb);
-        color.rgb = orderedDither(vUv, lum + 0.25);
+        color.rgb = orderedDither(vUv, lum + 0.125);
     
       gl_FragColor = color;
     }

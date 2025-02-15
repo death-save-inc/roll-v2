@@ -1,8 +1,9 @@
 const modules = [
     'test',
     'renderable',
-    'shaders/dither',
-    'shaders/ditherPass',
+    'shaders/dither-shader',
+    'shaders/dither-pass',
+    // 'lib/particle-fire',
     'model-loader',
     'scene'
 ]
