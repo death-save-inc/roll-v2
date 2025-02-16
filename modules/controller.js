@@ -11,6 +11,8 @@ import { LightningEffect } from "./effects/lightning-effect.js";
 import { RainEffect } from "./effects/rain-effect.js";
 import { Wall } from "./actors/wall.js";
 import { TextLoader } from "./lib/text-loader.js";
+import { Card } from "./actors/card.js";
+import { TextureLoader } from "./lib/texture-loader.js";
 
 
 export class Controller {
@@ -18,14 +20,10 @@ export class Controller {
     this._init();
     // this.debug=true
     this._addEffects();
-
     this._createExampleWorld();
     this._addLights();
     this._addPostProcessing();
     this._startAnimationLoop();
-
-    this.textLoader = new TextLoader(this)
-    this.textLoader.createText("../modules/RuneScape UF_Regular.json", "0xffffff", "hello world")
   }
 
   registerRenderAction(name, order, callback) {
@@ -41,6 +39,14 @@ export class Controller {
     return model;
   }
 
+  async loadText(text) {
+    return this.textLoader.createText("../modules/RuneScape UF_Regular.json", "0xffffff", text)
+  }
+
+  async loadTexture(text) {
+    return this.textureLoader.load(text)
+  }
+
   _init() {
     this.scene = new THREE.Scene();
 
@@ -50,23 +56,24 @@ export class Controller {
       0.2,
       2000
     );
- 
-    
+
     this.renderer = new THREE.WebGLRenderer()
     this.renderer.setSize(window.innerWidth, window.innerHeight)
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-    
+
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.update();
+    this.controls.target = (new THREE.Vector3(0, 4, 0));
     this.camera.position.set(-1, 4, -8);
-    this.controls.target=(new THREE.Vector3(0, 4, 0));
+
     this.modelLoader = new ModelLoader()
+    this.textLoader = new TextLoader(this)
+    this.textureLoader = new TextureLoader(this)
     this.renderActions = [];
     document.body.appendChild(this.renderer.domElement)
-    // window.addEventListener( 'resize', this._onWindowResize.bind(this) );
   }
 
   _onWindowResize() {
@@ -78,7 +85,7 @@ export class Controller {
   _startAnimationLoop() {
     this.clock = new THREE.Clock();
     this.delta = 0;
-    this.interval = 1 / 30;
+    this.interval = 1 / 60;
 
     this.renderer.setAnimationLoop(this._update.bind(this));
   }
@@ -92,15 +99,12 @@ export class Controller {
       if (this.debug) {
         this.renderer.render(this.scene, this.camera);
       } else {
-        this.camera.layers.set(0)
         this.composer.render();
       }
       this.delta = this.delta % this.interval;
     }
   }
   _addLights() {
-    this.scene.fog = new THREE.FogExp2(0xaaaaaa, 0.008)
-
     const light = new THREE.AmbientLight(0xffffff);
     light.intensity = 1.4;
 
@@ -112,10 +116,10 @@ export class Controller {
     this.scene.add(dl);
   }
 
-  _addEffects(){
+  _addEffects() {
     const lightning = new LightningEffect(this.scene, 2, 0);
     const rain = new RainEffect(this.scene, 2000);
-    this.registerRenderAction("lightning",9, () => lightning.update());
+    this.registerRenderAction("lightning", 9, () => lightning.update());
     this.registerRenderAction("rain", 10, () => rain.update());
   }
 
@@ -129,15 +133,18 @@ export class Controller {
     );
 
     const brazier2 = new Brazier(
-        this,
-        "brazierLeft",
-        1,
-        new THREE.Vector3(5, 0, 0),
-        new THREE.Vector3(1, 1, 1)
-      );
+      this,
+      "brazierLeft",
+      1,
+      new THREE.Vector3(5, 0, 0),
+      new THREE.Vector3(1, 1, 1)
+    );
 
-      const wall = new Wall(this, "wall", 1, new THREE.Vector3(0, 0, 4),new THREE.Vector3(2, 2, 2))
-
+    const wall = new Wall(this, "wall", 1, new THREE.Vector3(0, 0, 4), new THREE.Vector3(2, 2, 2))
+    const card = new Card(this, "Monsters", 1, new THREE.Vector3(0, 4, 1.5), new THREE.Vector3(0.5, 0.5, 0.5))
+    const card1 = new Card(this, "Drune", 1, new THREE.Vector3(-3, 4, 1.5), new THREE.Vector3(0.5, 0.5, 0.5))
+    const card2 = new Card(this, "LONG NAME", 1, new THREE.Vector3(3, 4, 1.5), new THREE.Vector3(0.5, 0.5, 0.5))
+    
   }
 
   _addPostProcessing() {
@@ -148,7 +155,7 @@ export class Controller {
     const DitherPassInit = DitherPassGen({ THREE, Pass, FullScreenQuad });
     const ditherPass = new DitherPassInit({
       resolution: new THREE.Vector2(window.innerWidth, window.innerHeight),
-      bias: 0.25,
+      bias: 0.3,
     });
 
     this.composer.addPass(ditherPass);

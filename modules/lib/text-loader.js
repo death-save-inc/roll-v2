@@ -8,26 +8,17 @@ export class TextLoader {
     this.loader = new FontLoader();
   }
 
-  async createText(pathTofont, color, text) {
+  async createText(pathTofont, color, message) {
     return new Promise((resolve, reject) => {
       this.loader.load(
         pathTofont,
-         (font)=> {
-          const color = new THREE.Color(0xffff00);
+        (font) => {
+          const color = new THREE.Color(0xcccccc);
 
           const matDark = new THREE.MeshBasicMaterial({
             color: color,
             side: THREE.DoubleSide,
           });
-
-          const matLite = new THREE.MeshBasicMaterial({
-            color: color,
-            transparent: true,
-            opacity: 0.4,
-            side: THREE.DoubleSide,
-          });
-
-          const message = "   Three.js\nStroke text.";
 
           const shapes = font.generateShapes(message, 100);
 
@@ -40,15 +31,6 @@ export class TextLoader {
 
           geometry.translate(xMid, 0, 0);
 
-          // make shape ( N.B. edge view not visible )
-
-          const text = new THREE.Mesh(geometry, matLite);
-          text.position.z = -150;
-          console.log(this.controller)
-          text.layers.set(11)
-          this.controller.scene.add(text);
-
-          // make line shape ( N.B. edge view remains visible )
 
           const holeShapes = [];
 
@@ -65,7 +47,7 @@ export class TextLoader {
 
           shapes.push.apply(shapes, holeShapes);
 
-          const style = SVGLoader.getStrokeStyle(5, color.getStyle());
+          const style = SVGLoader.getStrokeStyle(4, color.getStyle());
 
           const strokeText = new THREE.Group();
 
@@ -81,16 +63,11 @@ export class TextLoader {
             const strokeMesh = new THREE.Mesh(geometry, matDark);
             strokeText.add(strokeMesh);
           }
-          strokeText.scale.set(0.01,0.01,0.01)
-          strokeText.position.set(0,3,0)
-          strokeText.rotateY (180 * (Math.PI/180))
-          strokeText.layers.set(1)
-          this.controller.scene.add(strokeText)
-          
-          
-        // resolve(strokeText)
+          strokeText.position.set(0, 0, 0)
+          strokeText.rotateY(180 * (Math.PI / 180))
+          resolve(strokeText)
         }
-      ); //end load functi
+      );
     });
   }
 }

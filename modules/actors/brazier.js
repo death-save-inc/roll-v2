@@ -20,10 +20,10 @@ export class Brazier extends Actor {
     model.scene.children[1].material = new THREE.MeshPhongMaterial({
       color: new THREE.Color().setRGB(138 / 255, 129 / 255, 124 / 255),
     });
-    model.scene.children[0].castShadow = true; 
-    model.scene.children[0].receiveShadow = true; 
+    model.scene.children[0].castShadow = true;
+    model.scene.children[0].receiveShadow = true;
     model.scene.children[1].castShadow = true;
-    model.scene.children[1].receiveShadow = true; 
+    model.scene.children[1].receiveShadow = true;
 
     model.scene.position.fromArray(this.position.toArray());
     model.scene.scale.fromArray(this.scale.toArray());
@@ -33,7 +33,7 @@ export class Brazier extends Actor {
       this.controller,
       new THREE.Vector3(this.position.x, this.position.y + 3, this.position.z),
       0.5,
-    6,
+      6,
       400,
       4,
       0.0125

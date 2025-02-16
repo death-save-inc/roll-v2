@@ -16,12 +16,12 @@ export class Wall extends Actor {
         //Ugly, need to fix later
         if (mesh.type==="Mesh"){
             if (mesh.name === "doorframe"){
-                mesh.material = new THREE.MeshPhongMaterial({
+                mesh.material = new THREE.MeshPhysicalMaterial({
                     color: new THREE.Color().setRGB(180 / 255, 180 / 255, 180 / 255),
                   });
             }else {
-                mesh.material = new THREE.MeshPhongMaterial({
-                    color: new THREE.Color().setRGB(0 / 255, 140 / 255, 140 / 255),
+                mesh.material = new THREE.MeshPhysicalMaterial({
+                    color: new THREE.Color().setRGB(140 / 255, 140 / 255, 140 / 255),
                   });
             }
            
