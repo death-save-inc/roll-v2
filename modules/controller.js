@@ -10,6 +10,7 @@ import { Brazier } from "./actors/brazier.js";
 import { LightningEffect } from "./effects/lightning-effect.js";
 import { RainEffect } from "./effects/rain-effect.js";
 import { Wall } from "./actors/wall.js";
+import { TextLoader } from "./lib/text-loader.js";
 
 
 export class Controller {
@@ -22,6 +23,9 @@ export class Controller {
     this._addLights();
     this._addPostProcessing();
     this._startAnimationLoop();
+
+    this.textLoader = new TextLoader(this)
+    this.textLoader.createText("../modules/RuneScape UF_Regular.json", "0xffffff", "hello world")
   }
 
   registerRenderAction(name, order, callback) {
@@ -62,6 +66,13 @@ export class Controller {
     this.modelLoader = new ModelLoader()
     this.renderActions = [];
     document.body.appendChild(this.renderer.domElement)
+    // window.addEventListener( 'resize', this._onWindowResize.bind(this) );
+  }
+
+  _onWindowResize() {
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
   _startAnimationLoop() {
@@ -75,7 +86,19 @@ export class Controller {
     if (this.debug) {
       this.renderer.render(this.scene, this.camera);
     } else {
+
+  
+      this.renderer.autoClear = false;
+      this.renderer.clear();
+      
+      this.camera.layers.set(0);
       this.composer.render();
+      
+      this.renderer.clearDepth();
+      this.camera.layers.set(100);
+      this.renderer.render(this.scene, this.camera);
+
+      // this.composer.render();
     }
   }
 
