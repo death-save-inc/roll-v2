@@ -76,32 +76,28 @@ export class Controller {
   }
 
   _startAnimationLoop() {
+    this.clock = new THREE.Clock();
+    this.delta = 0;
+    this.interval = 1 / 30;
+
     this.renderer.setAnimationLoop(this._update.bind(this));
   }
 
   _update() {
-    this.renderActions.forEach((action) => action.render("add timestmap"));
-    this.controls.update();
+    this.delta += this.clock.getDelta();
+    if (this.delta > this.interval) {
+      this.renderActions.forEach((action) => action.render("add timestmap"));
+      this.controls.update();
 
-    if (this.debug) {
-      this.renderer.render(this.scene, this.camera);
-    } else {
-
-  
-      this.renderer.autoClear = false;
-      this.renderer.clear();
-      
-      this.camera.layers.set(0);
-      this.composer.render();
-      
-      this.renderer.clearDepth();
-      this.camera.layers.set(100);
-      this.renderer.render(this.scene, this.camera);
-
-      // this.composer.render();
+      if (this.debug) {
+        this.renderer.render(this.scene, this.camera);
+      } else {
+        this.camera.layers.set(0)
+        this.composer.render();
+      }
+      this.delta = this.delta % this.interval;
     }
   }
-
   _addLights() {
     this.scene.fog = new THREE.FogExp2(0xaaaaaa, 0.008)
 
