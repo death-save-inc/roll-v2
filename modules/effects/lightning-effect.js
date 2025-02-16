@@ -1,10 +1,5 @@
 import * as THREE from "three";
 
-const flash = {
-  intensity: 0,
-  nextFlash: new Date(),
-};
-
 export class LightningEffect {
   constructor(scene, maxBrightness, minBrightness) {
     this.scene = scene;
@@ -13,7 +8,6 @@ export class LightningEffect {
     this.flashBuffer = [];
     this.ready = false;
     this.init();
-
   }
 
   init() {

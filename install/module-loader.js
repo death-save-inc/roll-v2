@@ -1,11 +1,10 @@
 const modules = [
-    'test',
-    'renderable',
+    'lib/renderable',
     'shaders/dither-shader',
     'shaders/dither-pass',
     // 'lib/particle-fire',
-    'model-loader',
-    'scene'
+    'lib/model-loader',
+    'controller'
 ]
 
 const loadScript=()=> {

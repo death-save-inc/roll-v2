@@ -1,18 +1,17 @@
 import * as THREE from "three";
-import { RenderAction } from "../modules/renderable.js";
+import { RenderAction } from "./lib/renderable.js";
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
-import { DitherPassGen } from "../modules/shaders/dither-pass.js";
+import { DitherPassGen } from "./shaders/dither-pass.js";
 import { Pass, FullScreenQuad } from "three/addons/postprocessing/Pass.js";
-import { ModelLoader } from "../modules/model-loader.js";
+import { ModelLoader } from "./lib/model-loader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { createBrazier } from "../modules/brazier.js";
-import { LightningEffect } from "../modules/lightning-effect.js";
-import { RainEffect } from "../modules/rain-effect.js";
-import { FireEffect } from "../modules/fire-effect.js";
+import { Brazier } from "./actors/brazier.js";
+import { LightningEffect } from "./effects/lightning-effect.js";
+import { RainEffect } from "./effects/rain-effect.js";
 
 
-export class Scene {
+export class Controller {
   constructor() {
     this._init();
     // this.debug=true
@@ -108,19 +107,21 @@ export class Scene {
     plane.receiveShadow = true;
     this.scene.add( plane );
 
-    const brazier1 = await createBrazier(
+    const brazier1 = new Brazier(
       this,
+      "brazierLeft",
+      1,
       new THREE.Vector3(-4, 0, 0),
       new THREE.Vector3(1, 1, 1)
     );
-    const brazier2 = await createBrazier(this, new THREE.Vector3(4, 0, 0), new THREE.Vector3(1, 1, 1));
-    const delta = new THREE.Clock().getDelta();
-        console.log(delta)
-    console.log(brazier1)
 
-    this.registerRenderAction("brazier1", 1, () => brazier1.fire.material.update( Math.random() * 0.025 ));
-    this.registerRenderAction("brazier2", 1, () => brazier2.fire.material.update( Math.random() * 0.025  ));
-
+    const brazier2 = new Brazier(
+        this,
+        "brazierLeft",
+        1,
+        new THREE.Vector3(4, 0, 0),
+        new THREE.Vector3(1, 1, 1)
+      );
   }
 
   _addPostProcessing() {
