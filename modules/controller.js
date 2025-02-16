@@ -9,6 +9,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { Brazier } from "./actors/brazier.js";
 import { LightningEffect } from "./effects/lightning-effect.js";
 import { RainEffect } from "./effects/rain-effect.js";
+import { Wall } from "./actors/wall.js";
 
 
 export class Controller {
@@ -45,7 +46,7 @@ export class Controller {
       0.2,
       2000
     );
-    this.camera.position.set(0, 5, -8);
+ 
     
     this.renderer = new THREE.WebGLRenderer()
     this.renderer.setSize(window.innerWidth, window.innerHeight)
@@ -56,7 +57,8 @@ export class Controller {
     
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.update();
-
+    this.camera.position.set(-1, 4, -8);
+    this.controls.target=(new THREE.Vector3(0, 4, 0));
     this.modelLoader = new ModelLoader()
     this.renderActions = [];
     document.body.appendChild(this.renderer.domElement)
@@ -81,8 +83,7 @@ export class Controller {
     this.scene.fog = new THREE.FogExp2(0xaaaaaa, 0.008)
 
     const light = new THREE.AmbientLight(0xffffff);
-    light.intensity = 1;
-    light.castShadow = false
+    light.intensity = 1.4;
 
     const dl = new THREE.DirectionalLight(0xffffff, 0.5);
     dl.position.set( 0, 1, 0 ); //default; light shining from top
@@ -100,18 +101,11 @@ export class Controller {
   }
 
   async _createExampleWorld() {
-    const geometry = new THREE.PlaneGeometry( 20, 20 );
-    const material = new THREE.MeshPhongMaterial( {color: 0xbbbbbb, side: THREE.DoubleSide} );
-    const plane = new THREE.Mesh( geometry, material );
-    plane.rotateX (90 * (Math.PI/180))
-    plane.receiveShadow = true;
-    this.scene.add( plane );
-
     const brazier1 = new Brazier(
       this,
       "brazierLeft",
       1,
-      new THREE.Vector3(-4, 0, 0),
+      new THREE.Vector3(-5, 0, 0),
       new THREE.Vector3(1, 1, 1)
     );
 
@@ -119,9 +113,12 @@ export class Controller {
         this,
         "brazierLeft",
         1,
-        new THREE.Vector3(4, 0, 0),
+        new THREE.Vector3(5, 0, 0),
         new THREE.Vector3(1, 1, 1)
       );
+
+      const wall = new Wall(this, "wall", 1, new THREE.Vector3(0, 0, 4),new THREE.Vector3(2, 2, 2))
+
   }
 
   _addPostProcessing() {

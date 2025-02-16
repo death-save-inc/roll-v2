@@ -32,10 +32,10 @@ export class Brazier extends Actor {
     this.fire = new FireEffect(
       this.controller,
       new THREE.Vector3(this.position.x, this.position.y + 3, this.position.z),
-      0.75,
-      8,
+      0.5,
+    6,
       400,
-      2,
+      4,
       0.0125
     );
     this.ready = true;
