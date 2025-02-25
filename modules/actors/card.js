@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { Actor } from "./actor.js";
+import { Interaction } from "../lib/interaction.js";
 
 export class Card extends Actor {
     constructor(controller, name, order, position, scale) {
@@ -12,13 +13,18 @@ export class Card extends Actor {
 
     async _init() {
 
-        const model = await this.loadModel()
-        this.setParts(model)
+        this.model = await this.loadModel()
+        this.setParts(this.model)
         await this.setName()
         await this.setRoll()
         await this.setPicture()
 
-        this.controller.scene.add(model.scene);
+        this.controller.scene.add(this.model.scene);
+        this.controller.interactions.push(
+            new Interaction(this.model.scene.uuid, () => { console.log("clicking", this.model.scene.uuid)}, () => { console.log('hover') } )
+        )
+
+        console.log("group init", this.model.scene.uuid)
     }
 
     async loadModel() {
@@ -42,12 +48,12 @@ export class Card extends Actor {
     }
 
     setParts(model) {
-        const group = model.scene.children[0].children
+        this.group = model.scene.children[0].children
 
         this.parts = {
-            name: group.find(part => part.name === "name"),
-            picture: group.find(part => part.name === "picture"),
-            roll: group.find(part => part.name === "roll")
+            name: this.group.find(part => part.name === "name"),
+            picture: this.group.find(part => part.name === "picture"),
+            roll: this.group.find(part => part.name === "roll")
         }
     }
 
@@ -83,33 +89,33 @@ export class Card extends Actor {
         return cube_bbox.max.y - cube_bbox.min.y;
     }
 
-    _fitText(text, mesh, useZ=false) {
-       
+    _fitText(text, mesh, useZ = false) {
+
         //make sure boundingboxes are up to date
         text.updateMatrix()
         mesh.updateMatrix()
-       
+
         // Get boundingboxes
         const boundingBoxText = new THREE.Box3().setFromObject(text)
         const boundingBoxMesh = new THREE.Box3().setFromObject(mesh)
-       
+
         // Get sizes of text component and mesh component
         const textSize = boundingBoxText.getSize(new THREE.Vector3(0, 0, 0))
         const meshSize = boundingBoxMesh.getSize(new THREE.Vector3(0, 0, 0))
 
         // calculate scale factor
-        const scaleFactor = useZ? (meshSize.z / (textSize.x + 550)) : (meshSize.x / (textSize.x + 300)) 
+        const scaleFactor = useZ ? (meshSize.z / (textSize.x + 550)) : (meshSize.x / (textSize.x + 300))
 
         // update text size
-        text.scale.set( scaleFactor, scaleFactor, scaleFactor)
+        text.scale.set(scaleFactor, scaleFactor, scaleFactor)
 
         // update bounding box for calulating center of text
         text.updateMatrix()
         const center = getCenterPoint(mesh)
-        const offset = (boundingBoxText.max.y - boundingBoxText.min.y) /2
-        
-        console.log(center.x, center.y - (offset/2)/100 , center.z - 0.05)
-        text.position.set(center.x, (center.y - (offset/2)/100) + 0.15 , center.z - 0.05)
+        const offset = (boundingBoxText.max.y - boundingBoxText.min.y) / 2
+
+        console.log(center.x, center.y - (offset / 2) / 100, center.z - 0.05)
+        text.position.set(center.x, (center.y - (offset / 2) / 100) + 0.15, center.z - 0.05)
     }
 
     update() {

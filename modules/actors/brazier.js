@@ -15,11 +15,14 @@ export class Brazier extends Actor {
     const model = await this.controller.loadModel("assets/models/brazier2.glb");
 
     model.scene.children[0].material = new THREE.MeshPhongMaterial({
-      color: new THREE.Color().setRGB(255 / 255, 255 / 255, 0 / 255),
+      color: new THREE.Color().setRGB(180 / 255, 180 / 255, 180 / 255),
     });
+
+    model.scene.children[0].layers.set(0);
     model.scene.children[1].material = new THREE.MeshPhongMaterial({
-      color: new THREE.Color().setRGB(138 / 255, 129 / 255, 124 / 255),
+      color: new THREE.Color().setRGB(150 / 255, 150 / 255, 150 / 255),
     });
+    model.scene.children[1].layers.set(0);
     model.scene.children[0].castShadow = true;
     model.scene.children[0].receiveShadow = true;
     model.scene.children[1].castShadow = true;

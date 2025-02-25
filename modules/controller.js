@@ -13,7 +13,7 @@ import { Wall } from "./actors/wall.js";
 import { TextLoader } from "./lib/text-loader.js";
 import { Card } from "./actors/card.js";
 import { TextureLoader } from "./lib/texture-loader.js";
-
+import { Raycaster } from "./lib/raycaster.js";
 
 export class Controller {
   constructor() {
@@ -24,6 +24,7 @@ export class Controller {
     this._addLights();
     this._addPostProcessing();
     this._startAnimationLoop();
+    console.log(this.clickActions)
   }
 
   registerRenderAction(name, order, callback) {
@@ -72,7 +73,9 @@ export class Controller {
     this.modelLoader = new ModelLoader()
     this.textLoader = new TextLoader(this)
     this.textureLoader = new TextureLoader(this)
+    this.raycaster = new Raycaster(this)
     this.renderActions = [];
+    this.interactions = []
     document.body.appendChild(this.renderer.domElement)
   }
 
@@ -95,6 +98,7 @@ export class Controller {
     if (this.delta > this.interval) {
       this.renderActions.forEach((action) => action.render("add timestmap"));
       this.controls.update();
+      this.raycaster.update()
 
       if (this.debug) {
         this.renderer.render(this.scene, this.camera);
