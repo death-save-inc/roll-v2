@@ -19,7 +19,10 @@ export class Wall extends Actor {
                 mesh.material = new THREE.MeshPhysicalMaterial({
                     color: new THREE.Color().setRGB(180 / 255, 180 / 255, 180 / 255),
                   });
-            }else {
+            }else if (mesh.name === "door"){
+              mesh.isVisible = false
+            }
+            else {
                 mesh.material = new THREE.MeshPhysicalMaterial({
                     color: new THREE.Color().setRGB(140 / 255, 140 / 255, 140 / 255),
                   });

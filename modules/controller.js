@@ -13,8 +13,10 @@ import { Wall } from "./actors/wall.js";
 import { TextLoader } from "./lib/text-loader.js";
 import { Card } from "./actors/card.js";
 import { TextureLoader } from "./lib/texture-loader.js";
-
-
+import { Raycaster } from "./lib/raycaster.js";
+import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
+import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
+import { FXAAShader } from "three/addons/shaders/FXAAShader.js";
 export class Controller {
   constructor() {
     this._init();
@@ -24,6 +26,7 @@ export class Controller {
     this._addLights();
     this._addPostProcessing();
     this._startAnimationLoop();
+    console.log(this.clickActions)
   }
 
   registerRenderAction(name, order, callback) {
@@ -72,7 +75,10 @@ export class Controller {
     this.modelLoader = new ModelLoader()
     this.textLoader = new TextLoader(this)
     this.textureLoader = new TextureLoader(this)
+    this.raycaster = new Raycaster(this)
     this.renderActions = [];
+    this.interactions = []
+    this.selectedObjects = []
     document.body.appendChild(this.renderer.domElement)
   }
 
@@ -93,8 +99,10 @@ export class Controller {
   _update() {
     this.delta += this.clock.getDelta();
     if (this.delta > this.interval) {
+      this.outlinePass.selectedObjects = this.selectedObjects;
       this.renderActions.forEach((action) => action.render("add timestmap"));
       this.controls.update();
+      this.raycaster.update()
 
       if (this.debug) {
         this.renderer.render(this.scene, this.camera);
@@ -109,7 +117,7 @@ export class Controller {
     light.intensity = 1.4;
 
     const dl = new THREE.DirectionalLight(0xffffff, 0.5);
-    dl.position.set( 0, 1, 0 ); //default; light shining from top
+    dl.position.set(0, 1, 0); //default; light shining from top
     dl.castShadow = true; // default false
 
     this.scene.add(light);
@@ -144,7 +152,7 @@ export class Controller {
     const card = new Card(this, "Monsters", 1, new THREE.Vector3(0, 4, 1.5), new THREE.Vector3(0.5, 0.5, 0.5))
     const card1 = new Card(this, "Drune", 1, new THREE.Vector3(-3, 4, 1.5), new THREE.Vector3(0.5, 0.5, 0.5))
     const card2 = new Card(this, "LONG NAME", 1, new THREE.Vector3(3, 4, 1.5), new THREE.Vector3(0.5, 0.5, 0.5))
-    
+
   }
 
   _addPostProcessing() {
@@ -158,6 +166,40 @@ export class Controller {
       bias: 0.3,
     });
 
+    this.outlinePass = new OutlinePass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      this.scene,
+      this.camera
+    );
+
+    // -- parameter config
+    this.outlinePass.edgeStrength = 300;
+    this.outlinePass.edgeGlow = 300;
+    this.outlinePass.edgeThickness = 3.0;
+    this.outlinePass.pulsePeriod = 0;
+    this.outlinePass.renderToScreen = true
+    this.outlinePass.usePatternTexture = true; // patter texture for an object mesh
+    this.outlinePass.visibleEdgeColor.set("#ff0000"); // set basic edge color
+    this.outlinePass.hiddenEdgeColor.set("#ffff00"); // set edge color when it hidden by other objects
+
+
+    //shader
+    this.effectFXAA = new ShaderPass(FXAAShader);
+    this.effectFXAA.uniforms["resolution"].value.set(
+      1 / window.innerWidth,
+      1 / window.innerHeight
+    );
+    this.effectFXAA.renderToScreen = true;
+
+    this.composer.addPass(this.effectFXAA);
     this.composer.addPass(ditherPass);
+
+    this.composer.addPass(this.outlinePass);
+
+  }
+
+  setSelectedObjects(obj) {
+    console.log("object:", obj)
+    this.selectedObjects = obj
   }
 }

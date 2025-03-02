@@ -1,24 +1,45 @@
 import * as THREE from "three";
 import { Actor } from "./actor.js";
+import { Interaction } from "../lib/interaction.js";
 
 export class Card extends Actor {
     constructor(controller, name, order, position, scale) {
         super(controller, name, order);
         this.position = position;
         this.scale = scale;
+        this.name = name
         this._init();
         this.register();
     }
 
     async _init() {
 
-        const model = await this.loadModel()
-        this.setParts(model)
+        this.model = await this.loadModel()
+        this.setParts(this.model)
+
         await this.setName()
         await this.setRoll()
         await this.setPicture()
+        this.controller.scene.add(this.model.scene);
 
-        this.controller.scene.add(model.scene);
+        this.controller.interactions.push(
+            new Interaction(this.model.scene.uuid, this.onClick.bind(this), this.onHover.bind(this))
+        )
+
+        console.log("group init", this.model.scene.uuid)
+    }
+
+    onClick() {
+        if (!this.cardUI) {
+            this.cardUI = new CardUI(this)
+        }
+
+        this.cardUI.show()
+    }
+
+    onHover(){
+        console.log('hover', this.group)
+        this.controller.setSelectedObjects(this.parts.picture)
     }
 
     async loadModel() {
@@ -42,25 +63,23 @@ export class Card extends Actor {
     }
 
     setParts(model) {
-        const group = model.scene.children[0].children
+        this.group = model.scene.children[0].children
 
         this.parts = {
-            name: group.find(part => part.name === "name"),
-            picture: group.find(part => part.name === "picture"),
-            roll: group.find(part => part.name === "roll")
+            name: this.group.find(part => part.name === "name"),
+            picture: this.group.find(part => part.name === "picture"),
+            roll: this.group.find(part => part.name === "roll")
         }
     }
 
-    async setPicture() {
-
-
+    async setPicture(url) {
         const pictures = ["dragon", "dwarf", "monsters", "wizard"]
-        const random = Math.floor(Math.random() * pictures.length);
-
-        const picture = await this.controller.loadTexture(`assets/models/textures/${pictures[random]}.jpg`)
+        if (!url) return
+        this.picture = await this.controller.loadTexture(url)
         this.parts.picture.material = new THREE.MeshBasicMaterial({
-            map: picture
+            map: this.picture
         });
+
     }
 
     async setRoll() {
@@ -71,10 +90,19 @@ export class Card extends Actor {
     }
 
     async setName() {
-        const text = await this.controller.loadText(this.name)
-        this.controller.scene.add(text)
-        this._fitText(text, this.parts.name, true)
-        this.parts.name.attach(text)
+        this.nameText = await this.controller.loadText(this.name)
+        this.controller.scene.add(this.nameText)
+        this._fitText(this.nameText, this.parts.name, true)
+        this.parts.name.attach(this.nameText)
+    }
+
+    async updateName(newName) {
+        this.name = newName
+        this.controller.scene.remove(this.nameText);
+        this.parts.name.remove(this.nameText)
+        this.nameText = await this.controller.loadText(this.name)
+        this.controller.scene.add(this.nameText)
+        this._fitText(this.nameText, this.parts.name, false)
     }
 
     _getHeight(mesh) {
@@ -83,33 +111,34 @@ export class Card extends Actor {
         return cube_bbox.max.y - cube_bbox.min.y;
     }
 
-    _fitText(text, mesh, useZ=false) {
-       
+    _fitText(text, mesh, useZ = false) {
+
         //make sure boundingboxes are up to date
         text.updateMatrix()
         mesh.updateMatrix()
-       
+
         // Get boundingboxes
         const boundingBoxText = new THREE.Box3().setFromObject(text)
         const boundingBoxMesh = new THREE.Box3().setFromObject(mesh)
-       
+
         // Get sizes of text component and mesh component
         const textSize = boundingBoxText.getSize(new THREE.Vector3(0, 0, 0))
         const meshSize = boundingBoxMesh.getSize(new THREE.Vector3(0, 0, 0))
 
         // calculate scale factor
-        const scaleFactor = useZ? (meshSize.z / (textSize.x + 550)) : (meshSize.x / (textSize.x + 300)) 
+        const scaleFactor = useZ ? (meshSize.z / (textSize.x + 550)) : (meshSize.x / (textSize.x + 300))
 
         // update text size
-        text.scale.set( scaleFactor, scaleFactor, scaleFactor)
+        text.scale.set(scaleFactor, scaleFactor, scaleFactor)
 
         // update bounding box for calulating center of text
         text.updateMatrix()
         const center = getCenterPoint(mesh)
-        const offset = (boundingBoxText.max.y - boundingBoxText.min.y) /2
-        
-        console.log(center.x, center.y - (offset/2)/100 , center.z - 0.05)
-        text.position.set(center.x, (center.y - (offset/2)/100) + 0.15 , center.z - 0.05)
+        const offset = (boundingBoxText.max.y - boundingBoxText.min.y) / 2
+
+        console.log(center.x, center.y - (offset / 2) / 100, center.z - 0.05)
+        text.position.set(center.x, (center.y - (offset / 2) / 100) + 0.15, center.z - 0.05)
+        console.log("fitting")
     }
 
     update() {
@@ -119,8 +148,8 @@ export class Card extends Actor {
 
 
 function getCenterPoint(mesh) {
-    var middle = new THREE.Vector3();
-    var geometry = mesh.geometry;
+    const middle = new THREE.Vector3();
+    const geometry = mesh.geometry;
 
     geometry.computeBoundingBox();
 
@@ -130,4 +159,76 @@ function getCenterPoint(mesh) {
 
     mesh.localToWorld(middle);
     return middle;
+}
+
+
+class CardUI {
+    constructor(card) {
+        this.card = card
+    }
+
+    async init() {
+        await this.loadTemplate()
+        this.findElements()
+        this.findElements()
+        this.bindEvents()
+        await this.render()
+    }
+
+    async show() {
+        const event = new CustomEvent("raycaster:inactive", {
+            bubbles: true,
+        });
+        document.dispatchEvent(event);
+        await this.init()
+
+    }
+
+    async loadTemplate() {
+        this.element = document.createElement("div")
+        this.element.classList.add("modal")
+        this.element.innerHTML = await (await fetch('../templates/card.html')).text();
+        document.body.appendChild(this.element)
+    }
+
+    hide(e) {
+        this.element.remove()
+        setTimeout(() => {
+            const event = new CustomEvent("raycaster:active", {
+                bubbles: true,
+            });
+            document.dispatchEvent(event);
+        }, 500);
+    }
+
+    findElements() {
+        this.imageEl = this.element.querySelector(".card-editor__image")
+        this.inputNameEl = this.element.querySelector(".card-editor__input-name")
+        this.closeBtnEl = this.element.querySelector(".card-editor__close")
+        this.inputImageEl = this.element.querySelector(".card-editor__input-image")
+    }
+
+    bindEvents() {
+        this.closeBtnEl.addEventListener("click", this.hide.bind(this))
+        this.inputNameEl.addEventListener("change", this.onNameChange.bind(this))
+        this.inputImageEl.addEventListener("change", this.onImageChange.bind(this))
+
+    }
+
+    async onNameChange(e) {
+        console.log(e)
+        await this.card.updateName(e.target.value)
+    }
+
+    async onImageChange(e) {
+        console.log(e.target.files[0])
+
+        let url = window.URL.createObjectURL(e.target.files[0]);
+        this.card.setPicture(url)
+        this.imageEl.src = url
+    }
+
+    async render() {
+        this.inputNameEl.value = this.card.name
+    }
 }

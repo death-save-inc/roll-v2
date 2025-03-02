@@ -13,7 +13,7 @@ export class TextLoader {
       this.loader.load(
         pathTofont,
         (font) => {
-          const color = new THREE.Color(0xcccccc);
+          const color = new THREE.Color(0xffff00)
 
           const matDark = new THREE.MeshBasicMaterial({
             color: color,
