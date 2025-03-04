@@ -17,7 +17,6 @@ const loadScript=()=> {
         script.type="module"
         script.src = path;
         document.body.appendChild(script);
-        console.log("loaded script: ", path)
     }
 }
 

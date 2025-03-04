@@ -19,12 +19,10 @@ export class RainEffect {
       ];
       raindrops.push(...raindrop);
     }
-    console.log(new Float32Array(raindrops));
     this.rainGeo.setAttribute(
       "position",
       new THREE.BufferAttribute(new Float32Array(raindrops), 3)
     );
-    console.log(this.rainGeo.getAttribute("position"));
     this.rainMaterial = new THREE.PointsMaterial({
       color: 0xcccccc,
       size: 0.1,

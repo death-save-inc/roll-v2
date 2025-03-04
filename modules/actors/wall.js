@@ -27,7 +27,7 @@ export class Wall extends Actor {
                     color: new THREE.Color().setRGB(140 / 255, 140 / 255, 140 / 255),
                   });
             }
-           
+              mesh.layers.set(3)
               mesh.castShadow = true;
               mesh.receiveShadow = true;
         }

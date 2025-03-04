@@ -8,6 +8,7 @@ export class Raycaster {
 
     init() {
         this.raycaster = new THREE.Raycaster();
+        this.raycaster.layers.set(0)
         this.pointer = new THREE.Vector2(-10,-10);
         this.currentHover = null
 
@@ -34,13 +35,18 @@ export class Raycaster {
 
     hover(){
         if (!this.active) return
-        for (let i = 0; i < this.intersects.length; i++) {
-            if (this.intersects[i].object.type === "Mesh"){
-                if (this.intersects[i].object.parent){
-                    const action = this.controller.interactions.find(action => action.id === this.intersects[i].object.parent.uuid )
-                    if (action && action.hover){
-                        action.hover()
-                        return
+
+        if (!this.intersects || this.intersects.length === 0){
+            this.controller.setSelectedObjects([])
+        }else{
+            for (let i = 0; i < this.intersects.length; i++) {
+                if (this.intersects[i].object.type === "Mesh"){
+                    if (this.intersects[i].object.parent){
+                        const action = this.controller.interactions.find(action => action.id === this.intersects[i].object.parent.uuid )
+                        if (action && action.hover){
+                            action.hover()
+                            return
+                        }
                     }
                 }
             }

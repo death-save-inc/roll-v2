@@ -35,8 +35,6 @@ export class LightningEffect {
     return new Promise((resolve, _) => {
       const timeout = setTimeout(async () => {
         for (const flash of this.flashBuffer) {
-          console.log("flash", flash);
-
           await this.flash(flash);
         }
         clearTimeout(timeout);
@@ -49,7 +47,6 @@ export class LightningEffect {
   flash(flash) {
     return new Promise((resolve, _) => {
         this.setBrightness(flash.intensity);
-        console.log("resolving");
         setTimeout(()=>{
           this.setBrightness(0)
           resolve();

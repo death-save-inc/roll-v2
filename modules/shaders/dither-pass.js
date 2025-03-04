@@ -17,8 +17,6 @@ export function DitherPassGen({ THREE, Pass, FullScreenQuad }) {
         fragmentShader: DitherShader.fragmentShader,
       }));
 
-      console.log(this._fsQuad.material.uniforms)
-
       this._fsQuad.material.uniforms['resolution'].value = resolution; // radial distortion coeff of term r^2
       this._fsQuad.material.uniforms['bias'].value = bias;
 
