@@ -1,4 +1,6 @@
 import * as THREE from "three";
+import { randomRange } from "../utils/utils.js";
+
 
 export class RainEffect {
   constructor(scene, rainCount) {
@@ -24,7 +26,7 @@ export class RainEffect {
       new THREE.BufferAttribute(new Float32Array(raindrops), 3)
     );
     this.rainMaterial = new THREE.PointsMaterial({
-      color: 0xcccccc,
+      color: 0xdddddd,
       size: 0.1,
       transparent: true,
     });
@@ -40,9 +42,11 @@ export class RainEffect {
     for (let i = 0; i < positionAttribute.count; i++) {
       vertex.fromBufferAttribute(positionAttribute, i); // read vertex
       vertex.velocity -= 0.1 + Math.random() * 0.1
-      vertex.y -= 0.8
+      vertex.y -= 1
+      vertex.x -= 0.5
         if (vertex.y < -100){
             vertex.y = 100
+            vertex.x = randomRange(0,100)
         }
       positionAttribute.setXYZ(i, vertex.x, vertex.y, vertex.z); // write coordinates back
     }
