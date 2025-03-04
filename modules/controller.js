@@ -45,7 +45,7 @@ export class Controller {
 
   async loadText(text) {
     return this.textLoader.createText(
-      "../modules/RuneScape UF_Regular.json",
+      "../modules/RuneScape_UF_Regular.json",
       "0xffffff",
       text
     );
