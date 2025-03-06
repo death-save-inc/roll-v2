@@ -241,7 +241,8 @@ class CardUI {
     this.element = document.createElement("div");
     this.element.classList.add("modal");
     this.element.innerHTML = await (
-      await fetch("../templates/card.html")
+      // await fetch("../templates/card.html")
+      await fetch("https://raw.githubusercontent.com/Roll-for-Initiative/roll-v2/refs/heads/main/templates/card.html")
     ).text();
     document.body.appendChild(this.element);
   }
