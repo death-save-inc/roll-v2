@@ -4,21 +4,28 @@ import { Interaction } from "../lib/interaction.js";
 import { compress } from "../lib/compress.js";
 
 export class Card extends Actor {
-  constructor(controller, name, uuid, imageSrc) {
+  constructor(controller, name, uuid, imageSrc, playerType="player") {
     super(controller, "name", 0);
     this.position = new THREE.Vector3(0, 2, 0);
-    this.desiredPosition = null
+    this.desiredPosition = null;
+    this.desiredRotation = null;
     this.scale = new THREE.Vector3(0.75, 0.75, 0.75);
     this.imageSrc = imageSrc;
     this.name = name;
     this.uuid = uuid;
     this.image = null;
+    this.type = playerType
+    this.modifier = 0
 
     this._init();
     this.register();
   }
   static empty(controller) {
     return new Card(controller, "change me", `card-${crypto.randomUUID()}`);
+  }
+
+  static dungeonMaster(controller) {
+    return new Card(controller, "Dungeon master", `card-${crypto.randomUUID()}`,null, "dm");
   }
 
   async _init() {
@@ -47,6 +54,7 @@ export class Card extends Actor {
         name: this.name,
         uuid: this.uuid,
         imageSrc: this.imageSrc,
+        type: this.type
       })
     );
     console.log("updating card:", localStorage.getItem(this.uuid));
@@ -81,8 +89,13 @@ export class Card extends Actor {
     });
 
     model.scene.position.fromArray(this.position.toArray());
-    model.scene.scale.fromArray(this.scale.toArray());
-    model.scene.rotateY(90 * (Math.PI / 180));
+    model.scene.children[0].scale.fromArray(this.scale.toArray());
+    model.scene.children[0].quaternion.setFromEuler(
+      new THREE.Euler(0, 90 * (Math.PI / 180), 0, "XYZ")
+    );
+    model.scene.quaternion.setFromEuler(
+      new THREE.Euler(-90 * (Math.PI / 180), 0, 0, "XYZ")
+    );
     return model;
   }
 
@@ -174,6 +187,8 @@ export class Card extends Actor {
       center.y - offset / 2 / 100 + 0.15,
       center.z - 0.05
     );
+
+    text.rotateX(90 * (Math.PI / 180))
   }
   getCenterPoint(mesh) {
     const middle = new THREE.Vector3();
@@ -189,8 +204,15 @@ export class Card extends Actor {
     return middle;
   }
   update() {
-    if (!this.model || !this.desiredPosition || this.model.scene.position.distanceTo(this.desiredPosition) < 0.01) return 
-    this.model.scene.position.lerp(this.desiredPosition, 0.05)
+    if (!this.model) return;
+
+    if (this.desiredRotation) {
+      this.model.scene.quaternion.slerp(this.desiredRotation, 0.02);
+    }
+
+    if (this.desiredPosition) {
+      this.model.scene.position.lerp(this.desiredPosition, 0.05);
+    }
   }
 }
 
@@ -269,8 +291,8 @@ class CardUI {
 
   async render() {
     this.inputNameEl.value = this.card.name;
-    if (this.card.imageSrc){
-        this.imageEl.src = this.card.imageSrc;
+    if (this.card.imageSrc) {
+      this.imageEl.src = this.card.imageSrc;
     }
   }
 }

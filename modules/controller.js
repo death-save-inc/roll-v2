@@ -11,13 +11,11 @@ import { LightningEffect } from "./effects/lightning-effect.js";
 import { RainEffect } from "./effects/rain-effect.js";
 import { Wall } from "./actors/wall.js";
 import { TextLoader } from "./lib/text-loader.js";
-import { Card } from "./actors/card.js";
 import { TextureLoader } from "./lib/texture-loader.js";
 import { Raycaster } from "./lib/raycaster.js";
 import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
-import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
-import { FXAAShader } from "three/addons/shaders/FXAAShader.js";
 import { CardManager } from "./managers/card-manager.js";
+
 export class Controller {
   constructor() {
     this._init();
@@ -45,7 +43,7 @@ export class Controller {
 
   async loadText(text) {
     return this.textLoader.createText(
-      "../modules/RuneScape_UF_Regular.json",
+      "./modules/RuneScape_UF_Regular.json",
       "0xffffff",
       text
     );
@@ -83,7 +81,7 @@ export class Controller {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.update();
     this.controls.target = new THREE.Vector3(0, 4, 0);
-    this.camera.position.set(-1, 4, -8);
+    this.camera.position.set(-1, 4, -12);
 
     this.modelLoader = new ModelLoader();
     this.textLoader = new TextLoader(this);
@@ -152,16 +150,16 @@ export class Controller {
       this,
       "brazierLeft",
       1,
-      new THREE.Vector3(-5, 0, 0),
-      new THREE.Vector3(1, 1, 1)
+      new THREE.Vector3(-7.5, 0, 0),
+      new THREE.Vector3(1.5, 1.5, 1.5)
     );
 
     const brazier2 = new Brazier(
       this,
       "brazierLeft",
       1,
-      new THREE.Vector3(5, 0, 0),
-      new THREE.Vector3(1, 1, 1)
+      new THREE.Vector3(7.5, 0, 0),
+      new THREE.Vector3(1.5, 1.5, 1.5)
     );
 
     const wall = new Wall(
@@ -169,7 +167,7 @@ export class Controller {
       "wall",
       1,
       new THREE.Vector3(0, 0, 4),
-      new THREE.Vector3(2, 2, 2)
+      new THREE.Vector3(3, 3, 3)
     );
   
   }
