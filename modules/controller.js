@@ -72,15 +72,13 @@ export class Controller {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-    this.renderer.gammaFactor = 2.2;
-    this.renderer.physicallyCorrectLights = true;
     this.renderer.setSize(window.innerWidth, window.innerHeight);
 
     this.renderer.shadowMap.enabled = true;
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.update();
-    this.controls.target = new THREE.Vector3(0, 4, 0);
+    this.controls.target = new THREE.Vector3(0, 6, 0);
     this.camera.position.set(-1, 4, -12);
 
     this.modelLoader = new ModelLoader();
@@ -128,7 +126,7 @@ export class Controller {
   }
   _addLights() {
     const light = new THREE.AmbientLight(0xffffff);
-    light.intensity = 1.75;
+    light.intensity = 2;
 
     const dl = new THREE.DirectionalLight(0xffffff, 0.5);
     dl.position.set(0, 1, 0); //default; light shining from top

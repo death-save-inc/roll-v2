@@ -62,6 +62,8 @@ export class CardManager {
           allPlayers[i + 1] = playerA;
         }
       }
+
+      // playera
     }
 
     return allPlayers
@@ -76,9 +78,9 @@ export class CardManager {
         this.setFanShape();
         setTimeout(() => {
           this.demoLoop();
-        }, 3000);
-      }, 3000);
-    }, 3000);
+        }, 4000);
+      }, 4000);
+    }, 4000);
   }
 
   addCard(data) {

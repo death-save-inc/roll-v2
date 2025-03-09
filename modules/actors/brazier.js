@@ -36,7 +36,7 @@ export class Brazier extends Actor {
       0.5,
       6,
       400,
-      4,
+      10,
       0.0125
     );
     this.ready = true;
