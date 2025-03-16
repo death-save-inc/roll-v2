@@ -1,11 +1,12 @@
 import * as THREE from "three";
 import { Actor } from "./actor.js";
 import { Interaction } from "../lib/interaction.js";
-import {CardUI} from "../UI/card.js"
+import { CardUI } from "../UI/card.js"
 import { TextRenderer } from "../lib/text-renderer.js";
+import { Die } from "./die.js";
 
 export class Card extends Actor {
-  constructor(controller, name, uuid, imageSrc, playerType="player") {
+  constructor(controller, name, uuid, imageSrc, playerType = "player", modifier=0) {
     super(controller, "name", 0);
     this.textRenderer = new TextRenderer(this.controller)
     this.position = new THREE.Vector3(0, 2, 0);
@@ -17,17 +18,18 @@ export class Card extends Actor {
     this.uuid = uuid;
     this.image = null;
     this.type = playerType
-    this.modifier = 0
+    this.modifier = modifier
+    this.color = 0xff00ff
+    this.die = new Die(this.controller, this.color)
 
     this._init();
-    this.register();
   }
   static empty(controller) {
     return new Card(controller, "change me", `card-${crypto.randomUUID()}`);
   }
 
   static dungeonMaster(controller) {
-    return new Card(controller, "Dungeon master", `card-${crypto.randomUUID()}`,null, "dm");
+    return new Card(controller, "Dungeon master", `card-${crypto.randomUUID()}`, null, "dm");
   }
 
   async _init() {
@@ -36,7 +38,7 @@ export class Card extends Actor {
     this.setup()
 
     await this.setName();
-    await this.setRoll();
+    // await this.setRoll();
     await this.setPicture(this.imageSrc, false);
     this.controller.scene.add(this.model.scene);
 
@@ -47,7 +49,11 @@ export class Card extends Actor {
         this.onHover.bind(this)
       )
     );
+
     this.updateLocalStorage();
+    this.register();
+
+
   }
 
   updateLocalStorage() {
@@ -57,7 +63,8 @@ export class Card extends Actor {
         name: this.name,
         uuid: this.uuid,
         imageSrc: this.imageSrc,
-        type: this.type
+        type: this.type, 
+        modifier: this.modifier
       })
     );
   }
@@ -125,23 +132,22 @@ export class Card extends Actor {
     }
   }
 
-  async setRoll() {
-    const texture = this.textRenderer.createTextTexture(this.roll,  this.rollMeshSize, 1024, true,false)
-    console.log(texture, this.rollMeshSize, this.roll)
+  setRoll() {
+    const number = this.reroll ? this.reroll : this.roll
+    const texture = this.textRenderer.createTextTexture(`${number - this.modifier}+${this.modifier}`, this.rollMeshSize, 1024,50)
     this.parts.roll.material = new THREE.MeshBasicMaterial({ map: texture });
   }
 
-  setup(){
+  setup() {
     this.centerMesh(this.parts.name)
     this.centerMesh(this.parts.roll)
     // Get boundingboxes
     // Get sizes of text component and mesh component
     this.nameMeshSize = this.messureMesh(this.parts.name)
     this.rollMeshSize = this.messureMesh(this.parts.roll)
-
   }
 
-  centerMesh (mesh){
+  centerMesh(mesh) {
     mesh.updateMatrix();
     mesh.geometry.computeBoundingBox();  // Get size
     const center = new THREE.Vector3();
@@ -150,21 +156,27 @@ export class Card extends Actor {
     mesh.position.copy(center);
   }
 
-  messureMesh(mesh){
+  messureMesh(mesh) {
     const boundingBoxNameMesh = new THREE.Box3().setFromObject(mesh);
     return boundingBoxNameMesh.getSize(new THREE.Vector3(0, 0, 0));
   }
 
   async setName() {
-    const texture = this.textRenderer.createTextTexture(this.name,  this.nameMeshSize, 1024, true,false)
+    const texture = this.textRenderer.createTextTexture(this.name, this.nameMeshSize, 1024)
     this.parts.name.material = new THREE.MeshBasicMaterial({ map: texture });
   }
 
-  async updateName(newName) {
+  updateName(newName) {
     this.name = newName;
     this.setName()
     this.updateLocalStorage();
   }
+
+  updateModifier(newModifier) {
+    this.modifier = newModifier;
+    this.updateLocalStorage();
+  }
+
 
   update() {
     if (!this.model) return;
@@ -176,5 +188,12 @@ export class Card extends Actor {
     if (this.desiredPosition) {
       this.model.scene.position.lerp(this.desiredPosition, 0.05);
     }
+
+    this.die.update()
+
+  }
+
+  delete(){
+    this.controller.scene.remove(this.model.scene)
   }
 }

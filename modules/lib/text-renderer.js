@@ -7,7 +7,7 @@ export class TextRenderer {
     this.loader = new FontLoader();
   }
 
-  createTextTexture(text, meshSize, scaleFactor = 1024,flipX = false, flipY = false) {
+  createTextTexture(text, meshSize, scaleFactor = 1024,maxFontSize= null) {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
@@ -17,7 +17,6 @@ export class TextRenderer {
 
    // Apply flipping before drawing
     ctx.save();
-  
 
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -27,6 +26,9 @@ export class TextRenderer {
 
     // Dynamically adjust font size to fit snugly
     let fontSize = Math.min(canvas.width / text.length, canvas.height * 0.8);
+    if (maxFontSize && fontSize > maxFontSize){
+      fontSize = maxFontSize
+    }
 
     ctx.font = `bold ${fontSize}px runescape`;
 
@@ -34,7 +36,6 @@ export class TextRenderer {
     let metrics = ctx.measureText(text);
     let textWidth = metrics.width;
     let textHeight = fontSize * 1.2; // Approximate height
-    console.log()
     // Resize the canvas to match the text size exactly
     canvas.width =textWidth < 1500 ?  Math.ceil(textWidth + 200) :  Math.ceil(textWidth + 40) // Add a small margin
     canvas.height = Math.ceil(textHeight + 0);

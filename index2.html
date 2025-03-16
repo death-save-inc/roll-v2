@@ -1,109 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Three.js D20 Dice</title>
+    <style>
+      body { margin: 0; background: #222; overflow: hidden; }
+      canvas { display: block; }
+    </style>
+  </head>
+  <body>
+    <script type="module">
+      import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
+      import { OrbitControls } from 'https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js';
 
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Three.js Dynamic Text Fitting</title>
-	<style>
-		body {
-			margin: 0;
-			overflow: hidden;
-		}
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.set(3, 3, 3);
 
-		canvas {
-			display: block;
-		}
-	</style>
-</head>
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
 
-<body>
-	<script type="module">
-		import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.min.js';
+      const controls = new OrbitControls(camera, renderer.domElement);
 
-		// Create scene, camera, and renderer
-		const scene = new THREE.Scene();
-		const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-		const renderer = new THREE.WebGLRenderer({ antialias: true });
-		renderer.setSize(window.innerWidth, window.innerHeight);
-		document.body.appendChild(renderer.domElement);
+      // Lighting
+      const light = new THREE.DirectionalLight(0xffffff, 1);
+      light.position.set(3, 5, 2);
+      scene.add(light);
+      scene.add(new THREE.AmbientLight(0xffffff, 0.3));
 
-		// Create a 3D box and get its exact size
-		const geometry = new THREE.BoxGeometry(3, 2, 0.5);
-		geometry.computeBoundingBox(); // Compute size
-		const size = geometry.boundingBox.getSize(new THREE.Vector3());
+      // Generate Numbered Textures
+      function createNumberTexture(number, size = 256) {
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = size;
+        const ctx = canvas.getContext('2d');
 
-		function createTextTexture(text, meshSize, scaleFactor = 1024) {
-			const canvas = document.createElement('canvas');
-			const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, size, size);
 
-			// Initial large canvas to measure text size
-			canvas.width = meshSize.x * scaleFactor;
-			canvas.height = meshSize.y * scaleFactor;
+        ctx.fillStyle = '#000000';
+        ctx.font = `${size * 0.6}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(number, size / 2, size / 2);
 
-			ctx.fillStyle = 'white';
-			ctx.fillRect(0, 0, canvas.width, canvas.height);
-			ctx.fillStyle = 'black';
-			ctx.textAlign = 'center';
-			ctx.textBaseline = 'middle';
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.needsUpdate = true;
+        return texture;
+      }
 
-			// Dynamically adjust font size to fit snugly
-			let fontSize = Math.min(canvas.width / text.length, canvas.height * 0.8);
-			ctx.font = `Bold ${fontSize}px Arial`;
+      // Create the D20
+      const radius = 1;
+      const icosa = new THREE.IcosahedronGeometry(radius, 0);
+      const posAttr = icosa.getAttribute('position');
+      const index = icosa.index.array;
 
-			// Measure actual text size
-			let metrics = ctx.measureText(text);
-			let textWidth = metrics.width;
-			let textHeight = fontSize * 1.2; // Approximate height
+      const d20Group = new THREE.Group();
 
-			// Resize the canvas to match the text size exactly
-			canvas.width = Math.ceil(textWidth + 20); // Add a small margin
-			canvas.height = Math.ceil(textHeight + 10);
+      for (let i = 0; i < index.length; i += 3) {
+        const a = index[i];
+        const b = index[i + 1];
+        const c = index[i + 2];
 
-			// Redraw text on the resized canvas
-			ctx.fillStyle = 'white';
-			ctx.fillRect(0, 0, canvas.width, canvas.height);
-			ctx.fillStyle = 'black';
-			ctx.textAlign = 'center';
-			ctx.textBaseline = 'middle';
+        const vA = new THREE.Vector3().fromBufferAttribute(posAttr, a);
+        const vB = new THREE.Vector3().fromBufferAttribute(posAttr, b);
+        const vC = new THREE.Vector3().fromBufferAttribute(posAttr, c);
 
-			ctx.font = `Bold ${fontSize}px Arial`;
-			ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+        const faceGeo = new THREE.BufferGeometry();
+        const vertices = new Float32Array([...vA.toArray(), ...vB.toArray(), ...vC.toArray()]);
+        faceGeo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+        faceGeo.computeVertexNormals();
 
-			// Create high-resolution texture
-			const texture = new THREE.CanvasTexture(canvas);
-			texture.needsUpdate = true;
-			texture.anisotropy = 16;
-			texture.minFilter = THREE.LinearMipMapLinearFilter;
-			texture.magFilter = THREE.LinearFilter;
+        // Generate texture for this face (1-based index)
+        const faceIndex = i / 3 + 1;
+        const texture = createNumberTexture(faceIndex);
 
-			return texture;
-		}
+        const material = new THREE.MeshStandardMaterial({
+          map: texture,
+          side: THREE.DoubleSide,
+        });
 
-		// Apply the text texture to the box
-		const material = new THREE.MeshBasicMaterial({ map: createTextTexture('works really well', size) });
-		const box = new THREE.Mesh(geometry, material);
-		scene.add(box);
+        const faceMesh = new THREE.Mesh(faceGeo, material);
+        d20Group.add(faceMesh);
+      }
 
-		// Position camera
-		camera.position.z = 5;
+      scene.add(d20Group);
 
-		// Animation loop
-		function animate() {
-			requestAnimationFrame(animate);
-			box.rotation.y += 0.01;
-			renderer.render(scene, camera);
-		}
-		animate();
+      // Animate
+      function animate() {
+        requestAnimationFrame(animate);
+        d20Group.rotation.y += 0.01;
+        d20Group.rotation.x += 0.005;
+        renderer.render(scene, camera);
+      }
+      animate();
 
-		// Resize handling
-		window.addEventListener('resize', () => {
-			renderer.setSize(window.innerWidth, window.innerHeight);
-			camera.aspect = window.innerWidth / window.innerHeight;
-			camera.updateProjectionMatrix();
-		});
-
-	</script>
-</body>
-
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    </script>
+  </body>
 </html>

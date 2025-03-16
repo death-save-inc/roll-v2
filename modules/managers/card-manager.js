@@ -1,5 +1,15 @@
 import * as THREE from "three";
 import { Card } from "../actors/card.js";
+import { RollUI } from "../UI/roll.js";
+
+
+const delayAndAWait = (callback, time)=>{
+  return new Promise((resolve, _)=>{
+    setTimeout(()=>{
+      resolve(callback())
+    }, time)
+  })
+}
 
 export class CardManager {
   constructor(controller) {
@@ -8,38 +18,51 @@ export class CardManager {
     this.init();
   }
 
-  init() {
+  async init() {
     const cards = this.readLocalStorage();
 
     if (cards.length > 0) {
       for (const card of cards) {
-        this.cards.push(this.addCard(card));
+          this.cards.push(await this.addCard(card));
       }
     } else {
-      this.cards.push(this.addCard());
-      this.cards.push(this.addCard());
-      this.cards.push(this.addCard());
-      this.cards.push(this.addCard());
-      this.cards.push(this.addDM());
+      this.cards.push(await this.addCard());
+      this.cards.push(await this.addCard());
+      this.cards.push(await this.addCard());
+      this.cards.push(await this.addCard());
+      this.cards.push(await this.addDM());
     }
-    // console.log("roll",this.roll())
-    // this.cards = this.roll()
-    // this.setFanShape();
-    this.demoLoop()
+
+    window.addEventListener("roll", async ()=>{
+      this.controller.setRollView()
+      
+      
+      this.setStackShape();
+      this.cards = await this.roll()
+    await delayAndAWait(async ()=>{await this.controller.setCardView()}, 2000) 
+      
+      this.setFanShape();
+      
+    })
+
+    this.UI = new RollUI()
+    console.log(this.UI)
+    // this.demoLoop()
   }
 
   randomDice(modifier, faceCount = 20) {
-    return Math.floor(Math.random() * faceCount) + 1 + modifier;
+    const rawRoll = Math.floor(Math.random() * faceCount) + 1
+    return rawRoll + parseInt(modifier)
   }
 
-  roll() {
+  async roll() {
     // group DM and players together
     const allPlayers = this.cards
 
     // do initial round of rolls
-    allPlayers.forEach((player) => {
+    allPlayers.forEach(async (player) => {
       player.reroll = null;
-      player.roll = this.randomDice(player.modifier);
+      player.roll = await player.die.roll()//this.randomDice(player.modifier);
     });
 
     // decide initial
@@ -52,8 +75,8 @@ export class CardManager {
       // if two players rolled the same, reroll until unique results
       if (playerA.roll === playerB.roll) {
         while (playerA.reroll === playerB.reroll) {
-          playerA.reroll = this.randomDice(playerA.modifier);
-          playerB.reroll = this.randomDice(playerB.modifier);
+          playerA.reroll = await playerA.die.roll()
+          playerB.reroll = await playerA.die.roll()
         }
 
         // swap positions if player B has a higher roll
@@ -65,13 +88,14 @@ export class CardManager {
 
       // playera
     }
+    allPlayers.forEach(player => player.setRoll())
 
     return allPlayers
   }
 
-  demoLoop() {
+  async demoLoop() {
     this.setStackShape();
-    this.cards = this.roll()
+    this.cards = await this.roll()
     setTimeout(() => {
       this.setPolygonShape();
       setTimeout(() => {
@@ -83,16 +107,22 @@ export class CardManager {
     }, 4000);
   }
 
-  addCard(data) {
+  async addCard(data) {
     if (data) {
-      return new Card(this.controller, data.name, data.uuid, data.imageSrc);
+      const card = new Card(this.controller, data.name, data.uuid, data.imageSrc, "player", data.modifier);
+      await card._init()
+      return card
     } else {
-      return Card.empty(this.controller);
+      const card = Card.empty(this.controller);
+      await card._init()
+      return card
     }
   }
 
-  addDM(){
-    return Card.dungeonMaster(this.controller)
+  async addDM() {
+    const card = Card.dungeonMaster(this.controller)
+    await card._init()
+    return card
   }
 
   readLocalStorage() {
@@ -163,4 +193,6 @@ export class CardManager {
       );
     }
   }
+
+  
 }

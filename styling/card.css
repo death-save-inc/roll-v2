@@ -64,19 +64,27 @@
   cursor: pointer;
 }
 
-.card-editor__input-name {
+.card-editor__input {
   height: 64px;
   width: 100%;
-  background-color: transparent;
+  background-color: rgba(100, 100, 100, 0.2);
   color: #ffffff;
   font-size: 24px;
   border: none;
   font-family: runescape;
+  margin-right: 16px;
+}
+
+.card-editor__input:disabled {
+
+  background-color: rgba(0, 0, 0, 0.2);
+  cursor: not-allowed;
 }
 
 .card-editor__input-row {
   display: flex;
   align-items: center;
+  padding: 8px 0 ;
 }
 
 .card-editor__input-row > label {
@@ -102,6 +110,26 @@
   font-size: 24px;
 }
 .card-editor__input-image::file-selector-button:hover {
+  color: #000000;
+  background-color: #ffffff;
+  border: 2px solid #000000;
+  cursor: pointer;
+}
+
+.card-editor__button {
+  font-weight: bold;
+  padding: 0.5em;
+  border: 2px solid #ffff00;
+  border-radius: 3px;
+  height: 60px;
+  width: 100%;
+  background-color: #000000;
+  color: #ffff00;
+  font-family: runescape;
+  font-size: 24px;
+}
+
+.card-editor__button:hover { 
   color: #000000;
   background-color: #ffffff;
   border: 2px solid #000000;

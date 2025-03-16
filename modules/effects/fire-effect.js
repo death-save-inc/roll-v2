@@ -33,7 +33,7 @@ export class FireEffect {
       this.particleCount
     );
     const material = new particleFire.Material({ color: 0xaaaaaa });
-    material.setPerspective(this.controller.camera.fov, window.innerHeight);
+    material.setPerspective(this.controller.cameraController.camera.fov, window.innerHeight);
     this.particleFireMesh = new THREE.Points(geometry, material);
     this.particleFireMesh.position.set(
       this.position.x,

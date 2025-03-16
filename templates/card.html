@@ -1,18 +1,29 @@
-<div class="card-editor ">
+<div class="card-editor">
     <button class="card-editor__close">X</button>
     <div class="card-editor__info">
         <h2>Character Sheet</h2>
         <div class="card-editor__input-row">
             <label>NAME:</label>
-            <input class="card-editor__input-name" />
+            <input class="card-editor__input card-editor__input-name" />
         </div>
         <div class="card-editor__input-row">
             <label>Initiative:</label>
-            <input class="card-editor__input-name" />
+            <input class="card-editor__input card-editor__modifier" />
+        </div>
+
+        <div>
+            <label>D20</label>
+            <input type="color"/>
         </div>
         <div class="card-editor__input-row">
             <label>Roll:</label>
-            <input disabled class="card-editor__input-name" />
+            <input disabled class="card-editor__input card-editor__roll" />
+            <label>Reroll:</label>
+            <input disabled class="card-editor__input  card-editor__reroll" />
+        </div>
+
+        <div class="card-editor__input-row">
+            <button class="card-editor__button card-editor__delete"><span style="color: red">X</span>Remove player<span style="color: red">X</span></button>
         </div>
     </div>
 

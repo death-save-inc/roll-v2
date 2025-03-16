@@ -21,14 +21,14 @@ export class Raycaster {
     onPointerMove(event) {
         this.pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
         this.pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-        this.raycaster.setFromCamera( this.pointer.clone(), this.controller.camera );
+        this.raycaster.setFromCamera( this.pointer.clone(), this.controller.cameraController.camera );
         this.hover()
     }
 
     update() {
         if (!this.active) return
         // update the picking ray with the camera and pointer position
-        this.raycaster.setFromCamera(this.pointer, this.controller.camera);
+        this.raycaster.setFromCamera(this.pointer, this.controller.cameraController.camera);
         // calculate objects intersecting the picking ray
         this.intersects = this.raycaster.intersectObjects(this.controller.scene.children);
     }

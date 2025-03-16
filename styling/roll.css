@@ -1,0 +1,17 @@
+.roll-actions {
+    position: fixed;
+    bottom: 24px;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    width: 100vw;
+    font-family: runescape;
+}
+
+.roll-actions__button {
+    font-family: runescape;
+    font-size: 75px;
+    color: #FFff00;
+    font-weight: 500;
+    background: transparent;
+}

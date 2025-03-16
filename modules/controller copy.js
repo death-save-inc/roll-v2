@@ -15,16 +15,17 @@ import { TextureLoader } from "./lib/texture-loader.js";
 import { Raycaster } from "./lib/raycaster.js";
 import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
 import { CardManager } from "./managers/card-manager.js";
+import { Die } from "./actors/die.js";
 import { Physics } from "./lib/physics.js";
-import { CameraController } from "./lib/camera-controller.js";
 
 export class Controller {
   constructor() {
     this._init();
-    this.debug=true
-
+    // this.debug=true
     this._addEffects();
     this._createExampleWorld();
+    this.physics = new Physics(this)
+    this.die = new Die(this)
     this._addLights();
     this._addPostProcessing();
     this._startAnimationLoop();
@@ -60,8 +61,14 @@ export class Controller {
   _init() {
     this.scene = new THREE.Scene();
 
- 
+    this.camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.2,
+      2000
+    );
 
+    this.camera.layers.enableAll();
 
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -74,10 +81,10 @@ export class Controller {
 
     this.renderer.shadowMap.enabled = true;
 
-
-    //here pass renderer
-    this.cameraController = new CameraController(this, this.renderer.domElement)
-
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.update();
+    this.controls.target = new THREE.Vector3(0, 6, 0);
+    this.camera.position.set(-1, 4, -12);
 
     this.modelLoader = new ModelLoader();
     this.textLoader = new TextLoader(this);
@@ -86,26 +93,15 @@ export class Controller {
     this.renderActions = [];
     this.interactions = [];
     this.selectedObjects = [];
-    this.physics = new Physics(this)
 
     this.cardManager =  new CardManager(this)
     document.body.appendChild(this.renderer.domElement);
   }
 
   _onWindowResize() {
-    this.cameraController.camera.aspect = window.innerWidth / window.innerHeight;
-    this.cameraController.camera.updateProjectionMatrix();
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-  }
-
-  setRollView(){
-    
-      this.cameraController.setTargetPosition(new THREE.Vector3(0,20,-7),new THREE.Vector3(0,0,-7))
-  }
-
-  setCardView(){
-    this.cameraController.setTargetPosition(new THREE.Vector3(-1, 4, -12),new THREE.Vector3(0, 6, 0))
-    
   }
 
   _startAnimationLoop() {
@@ -122,19 +118,17 @@ export class Controller {
       this.renderActions.forEach((action) => action.render("add timestmap"));
       this.outlinePass.selectedObjects = this.selectedObjects;
 
-      this.cameraController.controls.update();
+      this.controls.update();
       this.raycaster.update();
   
+
       if (this.debug) {
-        this.renderer.render(this.scene, this.cameraController.camera);
+        this.renderer.render(this.scene, this.camera);
       } else {
         this.composer.render();
       }
       this.delta = this.delta % this.interval;
-
     }
-    this.cameraController.update()
-    this.physics.update(this.delta)
   }
   _addLights() {
     const light = new THREE.AmbientLight(0xffffff);
@@ -156,21 +150,21 @@ export class Controller {
   }
 
   async _createExampleWorld() {
-    // const brazier1 = new Brazier(
-    //   this,
-    //   "brazierLeft",
-    //   1,
-    //   new THREE.Vector3(-7.5, 0, 0),
-    //   new THREE.Vector3(1.5, 1.5, 1.5)
-    // );
+    const brazier1 = new Brazier(
+      this,
+      "brazierLeft",
+      1,
+      new THREE.Vector3(-7.5, 0, 0),
+      new THREE.Vector3(1.5, 1.5, 1.5)
+    );
 
-    // const brazier2 = new Brazier(
-    //   this,
-    //   "brazierLeft",
-    //   1,
-    //   new THREE.Vector3(7.5, 0, 0),
-    //   new THREE.Vector3(1.5, 1.5, 1.5)
-    // );
+    const brazier2 = new Brazier(
+      this,
+      "brazierLeft",
+      1,
+      new THREE.Vector3(7.5, 0, 0),
+      new THREE.Vector3(1.5, 1.5, 1.5)
+    );
 
     const wall = new Wall(
       this,
@@ -184,19 +178,19 @@ export class Controller {
 
   _addPostProcessing() {
     this.composer = new EffectComposer(this.renderer);
-    const renderPass = new RenderPass(this.scene, this.cameraController.camera);
+    const renderPass = new RenderPass(this.scene, this.camera);
     this.composer.addPass(renderPass);
 
     const DitherPassInit = DitherPassGen({ THREE, Pass, FullScreenQuad });
     const ditherPass = new DitherPassInit({
       resolution: new THREE.Vector2(window.innerWidth, window.innerHeight),
-      bias: 0.35,
+      bias: 0.3,
     });
 
     this.outlinePass = new OutlinePass(
       new THREE.Vector2(window.innerWidth, window.innerHeight),
       this.scene,
-      this.cameraController.camera
+      this.camera
     );
 
     // -- parameter config
