@@ -7,6 +7,7 @@ import { Pass, FullScreenQuad } from "three/addons/postprocessing/Pass.js";
 import { ModelLoader } from "./lib/model-loader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { Brazier } from "./actors/brazier.js";
+import { Generic } from "./actors/v2/generic.js";
 import { LightningEffect } from "./effects/lightning-effect.js";
 import { RainEffect } from "./effects/rain-effect.js";
 import { Wall } from "./actors/wall.js";
@@ -21,7 +22,8 @@ export class Controller {
     this._init();
     // this.debug=true
     this._addEffects();
-    this._createExampleWorld();
+    // this._createExampleWorld();
+    this._createWorld();
     this._addLights();
     this._addPostProcessing();
     this._startAnimationLoop();
@@ -78,8 +80,13 @@ export class Controller {
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.update();
-    this.controls.target = new THREE.Vector3(0, 6, 0);
-    this.camera.position.set(-1, 4, -12);
+    // this.controls.target = new THREE.Vector3(0, 6, 0);
+    // this.camera.position.set(-1, 4, -12);
+
+    this.controls.target = new THREE.Vector3(0, 0.669, -5.498)
+    this.camera.position.set(3, 4, 12);
+
+
 
     this.modelLoader = new ModelLoader();
     this.textLoader = new TextLoader(this);
@@ -167,7 +174,68 @@ export class Controller {
       new THREE.Vector3(0, 0, 4),
       new THREE.Vector3(3, 3, 3)
     );
-  
+  }
+
+  async _createWorld() {
+    const ground = new Generic(
+      this,
+      "ground",
+      1,
+    );
+
+    const path = new Generic(
+      this,
+      "path",
+      1,
+    );
+
+    const trees = new Generic(
+      this,
+      "trees",
+      1,
+    );
+
+    const porch = new Generic(
+      this,
+      "porch",
+      1,
+    );
+
+    const castle = new Generic(
+      this,
+      "castle",
+      1,
+    );
+    
+    const altar = new Generic(
+      this,
+      "altar",
+      1,
+    );
+
+    const braziers = new Generic(
+      this,
+      "braziers",
+      1,
+    );
+
+    const arch = new Generic(
+      this,
+      "arch",
+      1,
+    );
+
+    const portcullis = new Generic(
+      this,
+      "portcullis",
+      1,
+    );
+
+    const tunnel = new Generic(
+      this,
+      "tunnel",
+      1,
+    );
   }
 
   _addPostProcessing() {
