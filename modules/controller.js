@@ -9,6 +9,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { Brazier } from "./actors/brazier.js";
 import { Generic } from "./actors/v2/generic.js";
 import { Braziers } from "./actors/v2/braziers.js";
+import { Camera } from "./actors/v2/camera.js";
 import { LightningEffect } from "./effects/lightning-effect.js";
 import { RainEffect } from "./effects/rain-effect.js";
 import { Wall } from "./actors/wall.js";
@@ -79,13 +80,13 @@ export class Controller {
 
     this.renderer.shadowMap.enabled = true;
 
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.update();
+    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    // this.controls.update();
     // this.controls.target = new THREE.Vector3(0, 6, 0);
     // this.camera.position.set(-1, 4, -12);
 
-    this.controls.target = new THREE.Vector3(0, 0.669, -5.498)
-    this.camera.position.set(3, 4, 12);
+    // this.controls.target = new THREE.Vector3(0, 0.669, -5.498)
+    // this.camera.position.set(3, 4, 12);
 
 
 
@@ -97,7 +98,7 @@ export class Controller {
     this.interactions = [];
     this.selectedObjects = [];
 
-    this.cardManager =  new CardManager(this)
+    // this.cardManager =  new CardManager(this)
     document.body.appendChild(this.renderer.domElement);
   }
 
@@ -121,7 +122,7 @@ export class Controller {
       this.renderActions.forEach((action) => action.render("add timestmap"));
       this.outlinePass.selectedObjects = this.selectedObjects;
 
-      this.controls.update();
+      // this.controls.update();
       this.raycaster.update();
 
       if (this.debug) {
@@ -235,6 +236,13 @@ export class Controller {
     const tunnel = new Generic(
       this,
       "tunnel",
+      1,
+    );
+
+    
+    const camera = new Camera(
+      this,
+      "camera",
       1,
     );
   }
