@@ -18,10 +18,6 @@ export class Generic extends Actor {
     model.scene.children[0].castShadow = true;
     model.scene.children[0].receiveShadow = true;
 
-    if(this.name === 'altar') {
-      console.log(model.scene.children[0].position)
-    }
-
     this.controller.scene.add(model.scene);
     this.ready = true;
   }

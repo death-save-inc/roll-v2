@@ -8,6 +8,7 @@ import { ModelLoader } from "./lib/model-loader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { Brazier } from "./actors/brazier.js";
 import { Generic } from "./actors/v2/generic.js";
+import { Braziers } from "./actors/v2/braziers.js";
 import { LightningEffect } from "./effects/lightning-effect.js";
 import { RainEffect } from "./effects/rain-effect.js";
 import { Wall } from "./actors/wall.js";
@@ -213,7 +214,7 @@ export class Controller {
       1,
     );
 
-    const braziers = new Generic(
+    const braziers = new Braziers(
       this,
       "braziers",
       1,

@@ -30,9 +30,14 @@ export class Brazier extends Actor {
     model.scene.scale.fromArray(this.scale.toArray());
     this.controller.scene.add(model.scene);
 
+    const position = new THREE.Vector3(this.position.x, this.position.y + 3, this.position.z)
+    position.sub(this.position)
+    position.multiply(this.scale)
+    position.add(this.position)
+
     this.fire = new FireEffect(
       this.controller,
-      new THREE.Vector3(this.position.x, this.position.y + 3, this.position.z),
+      position,
       0.5,
       6,
       400,
