@@ -130,3 +130,6 @@ dist
 .pnp.
 
 *.blend[0-9]*
+
+# Local env files
+config.local.json
