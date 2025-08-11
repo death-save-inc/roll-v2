@@ -11,6 +11,6 @@ export const LoadTemplate = async (path) => {
   }
 
   return await (
-    await fetch(`${domain}/${path}`)
+    await fetch(`${domain}/templates/${path}`)
   ).text();
 };
