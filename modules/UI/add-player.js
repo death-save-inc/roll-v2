@@ -1,21 +1,18 @@
 
 import { EventBus } from "../lib/eventbus.js";
+import { Config } from "../lib/config.js";
+import { LoadTemplate } from "../lib/template.js";
 
 export class AddPlayerUI {
     constructor() {
         this.template = null;
-        this.develop = true;
+        console.log("config", Config.instance);
+        this.develop = Config.instance.get("develop");
         this.init();
     }
 
     async init() {
-        if (this.develop) {
-            this.template = await this.loadTemplate("../templates/add-player-button.html");
-        } else if (!this.template) {
-            this.template = await this.loadTemplate(
-                "https://raw.githubusercontent.com/death-save-inc/roll-v2/refs/heads/main/templates/add-player-button.html"
-            );
-        }
+        this.template = await LoadTemplate("add-player-button.html", this.develop);
         this.createElement();
         this.findElements();
         this.bindEvents();

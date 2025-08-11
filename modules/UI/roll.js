@@ -1,18 +1,20 @@
 import { compress } from "../lib/compress.js";
 import { EventBus } from "../lib/eventbus.js";
+import { LoadTemplate } from "../lib/template.js";
+import { Config } from "../lib/config.js";
 
 export class RollUI {
   constructor(card) {
     this.template = null;
-    this.develop = true;
+    this.develop = Config.instance.get("develop");
     this.init();
   }
 
   async init() {
     if (this.develop) {
-      this.template = await this.loadTemplate("../templates/roll-button.html");
+      this.template = await LoadTemplate("../templates/roll-button.html");
     } else if (!this.template) {
-      this.template = await this.loadTemplate(
+      this.template = await LoadTemplate(
         "https://raw.githubusercontent.com/death-save-inc/roll-v2/refs/heads/main/templates/roll-button.html"
       );
     }
@@ -24,10 +26,6 @@ export class RollUI {
 
   async show() {
     await this.init();
-  }
-
-  async loadTemplate(url) {
-    return await (await fetch(url)).text();
   }
 
   createElement() {

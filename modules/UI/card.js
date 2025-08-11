@@ -1,20 +1,17 @@
 import { compress } from "../lib/compress.js";
 import { EventBus } from "../lib/eventbus.js";
+import { LoadTemplate } from "../lib/template.js";
+import { Config } from "../lib/config.js";
 
 export class CardUI {
     constructor(player) {
         this.player = player;
         this.template = null
-        this.develop = true
+        this.develop = Config.instance.get("develop");
     }
 
     async init() {
-        if (this.develop){
-            this.template = await this.loadTemplate("../templates/card.html")
-        }else if (!this.template){
-            this.template = await this.loadTemplate("https://raw.githubusercontent.com/death-save-inc/roll-v2/refs/heads/main/templates/card.html")
-        }
-        this.createElement()
+       this.template = await LoadTemplate("card.html", this.develop);
         this.findElements();
         this.findElements();
         this.bindEvents();
@@ -27,12 +24,6 @@ export class CardUI {
         });
         document.dispatchEvent(event);
         await this.init();
-    }
-
-    async loadTemplate(url) {
-        return await (
-            await fetch(url)
-        ).text();
     }
 
     createElement(){
