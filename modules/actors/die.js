@@ -1,292 +1,250 @@
 import * as THREE from "three";
 import { TextRenderer } from "../lib/text-renderer.js";
-import * as CANNON from "cannon"
-import { randomRange } from "../utils/utils.js";
+import { delayAndAWait } from "../utils/utils.js";
 
 export class Die {
-  constructor(controller, color) {
-    this.controller = controller
-    this.color = color
-    this.textRenderer = new TextRenderer(this.controller)
-    this.init()
+  constructor(controller, player) {
+    this.controller = controller;
+    this.player = player;
+    this.textures = [];
+    this.textRenderer = new TextRenderer(this.controller);
+    this.number = 0;
+    this.targetOpacity = 0; //0
+    this.markForDeletion = false;
+    this._init();
   }
 
-  async init() {
-    this.createGeometry()
-    this.updatePhysics = this.createPhysicsBodyForGroup(this.model);
-    // Assuming you have already created the physics body
-    // Apply a force to make it spin and move like a die being thrown
-  
+  show() {
+    this.targetOpacity = 1;
+  }
+  hide() {
+    this.targetOpacity = 0;
+  }
 
+  generateNumberTextures() {
+    for (let i = 1; i <= 20; i++) {
+      const texture = this.textRenderer.createTextTexture(
+        `${i}`,
+        new THREE.Vector3(4, 4, 4),
+        1024,
+        250,
+        "jacquard12"
+      );
+      texture.flipX = true;
+      texture.flipY = false; // Flip the texture vertically
+      texture.needsUpdate = true; // Ensure the texture is updated
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(-1, -1); // Adjust the repeat if necessary
+      texture.rotation = Math.PI; // Rotate the texture by 180 degrees
+      texture.colorSpace = THREE.SRGBColorSpace;
+      this.textures.push(texture);
+    }
+  }
 
+  async _init() {
+    this.generateNumberTextures();
+    this.dieMesh = await this.createCompleteDie();
+    this.controller.dieManager.registerDie(this);
+  }
+
+  lerpOpacity() {
+    if (this.dieParent) {
+      this.dieParent.traverse((child) => {
+        if (child.material && child.material.opacity !== undefined) {
+          const distanceToTargetOpacity = Math.abs(
+            child.material.opacity - this.targetOpacity
+          );
+          if (distanceToTargetOpacity > 0.01) {
+            child.material.opacity = THREE.MathUtils.lerp(
+              child.material.opacity,
+              this.targetOpacity,
+              0.1
+            );
+            child.material.transparent = true;
+          }
+        }
+      });
+    } else {
+      console.warn("Die parent not initialized yet.");
+    }
   }
 
   async roll() {
-    this.body.position.y += 5
-    // const linearImpulse = new CANNON.Vec3( Math.random(), Math.random() ,  Math.random()); // Random direction for the throw
-    // this.body.applyImpulse(linearImpulse, this.body.position);
-    const angularImpulse = new CANNON.Vec3(Math.random() * 10, Math.random() * 10, Math.random()*10); // Random spin values
-    this.body.applyTorque(angularImpulse);
-    return new Promise((resolve, _) => {
-      console.log(this.isBodySleeping())
-      const interval = setInterval(() => {
-        console.log('sleeping', this.isBodySleeping(0.1))
-        if (this.isBodySleeping(0.1)) {
-          clearTimeout(interval)
-          this.body.sleep()
-          resolve(this.getTopFace(this.body, this.faceNormals))
-        }
-      }, 200);
-    })
-  }
-
-  // checkResult(){
-
-  // }
-
-  createNumberTexture(number, size = 256) {
-    const canvas = document.createElement('canvas');
-    canvas.width = canvas.height = size;
-    const ctx = canvas.getContext('2d');
-
-    // Background
-    ctx.fillStyle = this.color;
-    ctx.fillRect(0, 0, size, size);
-
-    // Draw centered number
-    ctx.fillStyle = '#ffff00';
-    ctx.font = `${size * 0.5}px runescape`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    // Assuming your canvas element is ctx
-
-
-    ctx.fillText(number.toString(), size / 2, size * 0.76);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.needsUpdate = true;
-    return texture;
-  }
-
-  createIcosahedronFaceNormals(geometry) {
-    const faceNormals = [];
-    const posAttr = geometry.getAttribute('position');
-
-    // Iterate through each face (each 3 vertices)
-    for (let i = 0; i < posAttr.count; i += 3) {
-      const vA = new THREE.Vector3().fromBufferAttribute(posAttr, i);
-      const vB = new THREE.Vector3().fromBufferAttribute(posAttr, i + 1);
-      const vC = new THREE.Vector3().fromBufferAttribute(posAttr, i + 2);
-
-      // Compute the normal for the triangle face using the cross-product
-      const edge1 = new THREE.Vector3().subVectors(vB, vA);
-      const edge2 = new THREE.Vector3().subVectors(vC, vA);
-      const normal = new THREE.Vector3().crossVectors(edge1, edge2).normalize();
-
-      faceNormals.push(normal);
+    for (let i = 0; i < 20; i++) {
+      const num = this.generateNumber();
+      await delayAndAWait(() => {
+        this.updateNumberText(num);
+      }, 50);
     }
-
-    return faceNormals;
+    this.number = this.generateNumber();
+    this.updateNumbertextWithModifier(this.number);
+    return this.number + parseInt(this.player.modifier);
   }
 
-  createGeometry() {
-    // Create the D20
-    const radius = 0.5;
-    const icosa = new THREE.IcosahedronGeometry(radius, 0).toNonIndexed();
-    this.faceNormals = this.createIcosahedronFaceNormals(icosa);
-    const posAttr = icosa.getAttribute('position');
+  delete() {
+    this.markForDeletion = true
 
-    const d20Group = new THREE.Group();
+    this.controller.dieManager.unregisterDie(this)
 
-    for (let i = 0; i < posAttr.count; i += 3) {
-      const vA = new THREE.Vector3().fromBufferAttribute(posAttr, i);
-      const vB = new THREE.Vector3().fromBufferAttribute(posAttr, i + 1);
-      const vC = new THREE.Vector3().fromBufferAttribute(posAttr, i + 2);
-
-      // Normal triangle face geometry (no manual UV or vertex manipulation)
-      const faceGeo = new THREE.BufferGeometry();
-      faceGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([
-        vA.x, vA.y, vA.z,
-        vB.x, vB.y, vB.z,
-        vC.x, vC.y, vC.z,
-      ]), 3));
-
-      faceGeo.setAttribute('uv', new THREE.BufferAttribute(new Float32Array([
-        0.5, 1.0,  // top point of the triangle (UV centered)
-        0.0, 0.0,  // bottom-left point of the triangle (UV mapped)
-        1.0, 0.0,  // bottom-right point of the triangle (UV mapped)
-      ]), 2));
-      faceGeo.computeVertexNormals();
-
-      const faceMesh = new THREE.Mesh(faceGeo);
-      // Create texture with number
-      const texture = this.createNumberTexture(i / 3 + 1, 256); // Use face index for number
-      const boundingBoxNameMesh = new THREE.Box3().setFromObject(faceMesh);
-
-      const size = boundingBoxNameMesh.getSize(new THREE.Vector3(0, 0, 0))
-      // const texture = this.textRenderer.createTextTexture(String(i / 3 + 1), size, 1024, 100); // Use face index for number
-      faceMesh.material = new THREE.MeshStandardMaterial({
-        map: texture,
-        side: THREE.DoubleSide,
+    if (this.dieParent) {
+      this.controller.scene.remove(this.dieParent);
+      // traverse children to dispose of materials and geometries
+      this.dieParent.traverse((child) => {
+        if (child.geometry) {
+          child.geometry.dispose();
+        }
+        if (child.material) {
+          if (Array.isArray(child.material)) {
+            child.material.forEach((mat) => mat.dispose());
+          }
+        }
       });
-      // Add the face mesh to the group (position at the centroid is optional)
-      d20Group.add(faceMesh);
+      this.dieParent = null;
     }
-    this.model = d20Group
-    this.controller.scene.add(d20Group);
   }
 
-  createPhysicsBodyForGroup(group) {
-    const vertices = [];
-    const faces = []; // Faces array should be populated correctly
-
-    group.children.forEach(mesh => {
-        if (mesh.isMesh) {
-            const geometry = mesh.geometry;
-
-            if (!geometry.attributes.position) {
-                console.error("Mesh does not have position attribute!");
-                return;
-            }
-
-            const positions = geometry.attributes.position.array;
-            for (let i = 0; i < positions.length; i += 3) {
-                vertices.push(new CANNON.Vec3(positions[i], positions[i + 1], positions[i + 2]));
-            }
-
-            // If using indexed geometry, extract faces
-            if (geometry.index) {
-                const indices = geometry.index.array;
-                for (let i = 0; i < indices.length; i += 3) {
-                    faces.push([indices[i], indices[i + 1], indices[i + 2]]);
-                }
-            } else {
-                // If non-indexed, create faces manually (assume triangles)
-                const count = geometry.attributes.position.count;
-                for (let i = 0; i < count; i += 3) {
-                    faces.push([i, i + 1, i + 2]); // Simple triangulation
-                }
-            }
-        }
-    });
-
-    console.log('Vertices:', vertices.length, 'Faces:', faces.length);
-
-    // Check if faces are correctly populated
-    if (faces.length === 0) {
-        console.error('No faces found!');
-    }
-
-    // Create the convex hull shape from the vertices
-    const shape = new CANNON.ConvexPolyhedron({
-        vertices: vertices.filter(v => v instanceof CANNON.Vec3 && Number.isFinite(v.x) && Number.isFinite(v.y) && Number.isFinite(v.z)),
-        faces: faces
-    });
-
-    console.log('Convex Polyhedron Shape:', shape);
-
-    const body = new CANNON.Body({
-        mass: 5,
-        position: new CANNON.Vec3(randomRange(-10,10), 10, -5  + Math.random() *5), // Position adjustment
-        shape: shape
-    });
-
-    console.log('Body Position:', body.position);
-    console.log('Body Shape:', body.shapes);
-    body.sleep()
-
-    // Add the body to the world
-    this.controller.physics.addBody(body);
-
-    // Create the visual mesh for the body
-    const geometry = new THREE.BufferGeometry();
-    const positions = [];
-    shape.vertices.forEach(vertex => {
-        positions.push(vertex.x, vertex.y, vertex.z);
-    });
-    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(positions), 3));
-
-    const material = new THREE.MeshBasicMaterial({ color: this.color, wireframe: true });
-    const visualMesh = new THREE.Mesh(geometry, material);
-    this.controller.scene.add(visualMesh);
-
-    // Store reference to the visual mesh
-    body.visualMesh = visualMesh;
-
-    this.body = body;
-
-}
-
-  
-
-  createIcosahedronFaceNormals(geometry) {
-    const faceNormals = [];
-    const posAttr = geometry.getAttribute('position');
-
-    // Iterate through each face (each 3 vertices)
-    for (let i = 0; i < posAttr.count; i += 3) {
-      const vA = new THREE.Vector3().fromBufferAttribute(posAttr, i);
-      const vB = new THREE.Vector3().fromBufferAttribute(posAttr, i + 1);
-      const vC = new THREE.Vector3().fromBufferAttribute(posAttr, i + 2);
-
-      // Compute the normal for the triangle face using the cross-product
-      const edge1 = new THREE.Vector3().subVectors(vB, vA);
-      const edge2 = new THREE.Vector3().subVectors(vC, vA);
-      const normal = new THREE.Vector3().crossVectors(edge1, edge2).normalize();
-
-      faceNormals.push(normal);
-    }
-
-    return faceNormals;
+  generateNumber() {
+    const randomNumber = parseInt(Math.floor(Math.random() * 20) + 1);
+    this.updateNumberText(randomNumber);
+    return randomNumber;
   }
-  getTopFace() {
-    if (!this.body || !this.faceNormals) return 0;
 
-    const up = new THREE.Vector3(0, 1, 0);
-    const quat = new THREE.Quaternion(
-      this.body.quaternion.x,
-      this.body.quaternion.y,
-      this.body.quaternion.z,
-      this.body.quaternion.w
+  async createCompleteDie() {
+    this.dieParent = new THREE.Object3D();
+
+    await this.createDieMesh();
+    await this.createNameMesh();
+    await this.createNumberMesh(Math.floor(Math.random() * 20) + 1);
+
+    this.dieParent.add(this.dieMesh);
+    this.dieParent.add(this.nameMesh);
+    this.dieParent.add(this.numberMesh);
+
+    this.nameMesh.position.set(0, 1.8, 0.2);
+    this.dieMesh.position.set(0, 0, 0);
+    this.numberMesh.position.set(0, 0, -0.1);
+
+    this.dieParent.name = "die-parent";
+    this.controller.scene.add(this.dieParent);
+  }
+
+  async createNumberMesh(number) {
+    const texture = this.textures[number - 1];
+    this.numberMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(2, 2, 2),
+
+      new THREE.MeshStandardMaterial({
+        map: texture,
+        transparent: true,
+        emissive: new THREE.Color(0x00ffff),
+        emissiveIntensity: 1,
+        side: THREE.DoubleSide,
+      })
     );
 
-    let maxDot = -Infinity;
-    let topFaceIndex = -1;
+    this.numberMesh.rotation.x = -Math.PI;
+  }
 
-    for (let i = 0; i < this.faceNormals.length; i++) {
-      const localNormal = this.faceNormals[i].clone();
-      const worldNormal = localNormal.applyQuaternion(quat); // Rotate into world space
-      const dot = worldNormal.dot(up);
+  async createDieMesh() {
+    const texture = await this.controller.loadTexture(
+      "assets/models/textures/d20-inverted.png"
+    );
+    this.dieMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(2.8, 2.8, 2.8),
+      new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        side: THREE.DoubleSide,
+      })
+    );
 
-      if (dot > maxDot) {
-        maxDot = dot;
-        topFaceIndex = i;
-      }
+    this.dieMesh.rotation.x = -Math.PI;
+  }
+
+  async createNameMesh() {
+    const texture = this.textRenderer.createTextTexture(
+      this.player.name,
+      new THREE.Vector3(4, 1, 4),
+      1024,
+      250,
+      "jacquard12"
+    );
+
+    texture.flipX = true;
+    texture.flipY = false; // Flip the texture vertically
+    texture.needsUpdate = true; // Ensure the texture is updated
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(-1, -1); // Adjust the repeat if necessary
+    texture.rotation = Math.PI; // Rotate the texture by 180 degrees
+    texture.colorSpace = THREE.SRGBColorSpace; // Ensure the texture uses sRGB color space
+
+    this.nameMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(4, 1, 4),
+      new THREE.MeshStandardMaterial({
+        map: texture,
+        transparent: true,
+        side: THREE.DoubleSide,
+      })
+    );
+
+    this.nameMesh.rotation.x = -Math.PI;
+  }
+
+  setPosition(position) {
+    if (this.dieParent) {
+      this.dieParent.position.set(position.x, position.y, position.z);
+    } else {
+      console.warn("Die parent not initialized yet.");
     }
-
-    // Return face number (1-indexed)
-    return topFaceIndex + 1;
-  }
-  isBodySleeping(threshold = 0.1) {
-    const linearSpeed = this.body.velocity.length();
-    const angularSpeed = this.body.angularVelocity.length();
-    return linearSpeed < threshold && angularSpeed < threshold;
   }
 
+  updateNumberText(number) {
+    if (!this.dieParent) {
+      console.warn("Die parent not initialized yet.");
+      return;
+    }
+    this.numberMesh.material.map = this.textures[number - 1];
+  }
 
-  //   this.controller.physics.addBody(body);
+  updateNumbertextWithModifier(number) {
+    const texture = this.textRenderer.createTextTexture(
+      `${number}`,
+      new THREE.Vector3(4, 4, 4),
+      1024,
+      250,
+      "jacquard12"
+    );
+
+    texture.flipX = true;
+    texture.flipY = false; // Flip the texture vertically
+    texture.needsUpdate = true; // Ensure the texture is updated
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(-1, -1); // Adjust the repeat if necessary
+    texture.rotation = Math.PI; // Rotate the texture by 180 degrees
+    texture.colorSpace = THREE.SRGBColorSpace;
+    this.numberMesh.material.map = texture;
+
+    if (number === 20) {
+      this.numberMesh.material.emissive = new THREE.Color(0x00ff00);
+    } else if (number === 1) {
+      this.numberMesh.material.emissive = new THREE.Color(0xff0000);
+    } else {
+      this.numberMesh.material.emissive = new THREE.Color(0xffff00);
+    }
+  }
+
   update() {
-    this.faceNormals.forEach((normal, index) => {
-      if (normal.length() === 0) {
-        console.error(`Invalid normal on face ${index + 1}`);
-      }
-    });
-    if (this.model && this.body) {
-      this.model.position.copy(this.body.position);
-      this.model.quaternion.set(this.body.quaternion.x, this.body.quaternion.y, this.body.quaternion.z, this.body.quaternion.w)
-      this.body.visualMesh.position.copy(this.body.position);
-      this.body.visualMesh.quaternion.set(this.body.quaternion.x, this.body.quaternion.y, this.body.quaternion.z, this.body.quaternion.w)
+    if (this.dieParent) {
+      this.dieParent.lookAt(this.controller.cameraController.camera.position);
+      this.dieParent.quaternion.copy(
+        this.controller.cameraController.camera.quaternion
+      );
+      this.lerpOpacity(); // Rotate the die parent for a spinning effect
+    } else if (!this.markForDeletion) {
+      console.warn("Die parent not initialized yet.");
     }
-
   }
 }

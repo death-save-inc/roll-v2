@@ -5,11 +5,11 @@
     display: flex;
     justify-content: center;
     width: 100vw;
-    font-family: runescape;
+    font-family: jacquard12;
 }
 
 .roll-actions__button {
-    font-family: runescape;
+    font-family: jacquard12;
     font-size: 75px;
     color: #FFff00;
     font-weight: 500;

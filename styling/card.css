@@ -1,23 +1,45 @@
 .card-editor {
   background: rgba(0, 0, 0, 0.75);
   height: 50%;
-  width: 50%;
+  /* width: 50%; */
   display: flex;
   justify-content: center;
   align-items: center;
   color: #ffffff;
-  border-radius: 12px;
+  /* border-radius: 12px; */
   overflow: hidden;
   padding: 12px;
   position: relative;
   padding: 20px;
+  font-family: jacquard12, sans-serif !important;
+  box-shadow: -3px -3px 5px 0px rgba(255, 255, 255, 0.3);
+  /* -webkit-box-shadow: -3px -3px 5px 0px rgba(255,206,206,0.75); */
+  /* -moz-box-shadow: -3px -3px 5px 0px rgba(255,206,206,0.75); */
+}
+
+.card-editor__background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  filter: contrast(1000%) brightness(1500%);
+  background: radial-gradient(
+      circle at 250% -200%,
+      rgb(166, 0, 255),
+      rgba(2, 0, 0, 0.5)
+    ),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='6.3' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+
+  z-index: -1;
 }
 
 .card-editor__info {
   flex: 1;
   padding: 10px;
   height: 100%;
-  font-family: runescape;
+  font-family: jacquard12;
   color: #ffff00;
   font-size: 32px;
 }
@@ -36,8 +58,8 @@
 .card-editor__image {
   height: 100%;
   width: 100%;
-  object-fit: fill;
-  transform: rotate(180deg);
+  object-fit: contain;
+  box-shadow: -3px -3px 5px 0px rgba(255, 255, 255, 0.3);
 }
 
 .card-editor__close {
@@ -50,33 +72,33 @@
   width: 64px;
   border-radius: 50%;
   background-color: #000000;
-  border: 2px solid #ffffff;
+  /* border: 2px solid #ffffff; */
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: -3px -3px 5px 0px rgba(255, 255, 255, 0.3);
+
   transition: all 200ms ease-in;
 }
 
 .card-editor__close:hover {
-  color: #000000;
-  background-color: #ffffff;
-  border: 2px solid #000000;
+  background-color: #cb8e019e;
   cursor: pointer;
 }
 
 .card-editor__input {
   height: 64px;
   width: 100%;
-  background-color: rgba(100, 100, 100, 0.2);
+  background-color: rgba(39, 39, 39, 0.3);
   color: #ffffff;
   font-size: 24px;
   border: none;
-  font-family: runescape;
+  border-radius: 12px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.8);
   margin-right: 16px;
 }
 
 .card-editor__input:disabled {
-
   background-color: rgba(0, 0, 0, 0.2);
   cursor: not-allowed;
 }
@@ -84,7 +106,7 @@
 .card-editor__input-row {
   display: flex;
   align-items: center;
-  padding: 8px 0 ;
+  padding: 8px 0;
 }
 
 .card-editor__input-row > label {
@@ -100,38 +122,40 @@
 .card-editor__input-image::file-selector-button {
   font-weight: bold;
   padding: 0.5em;
-  border: 2px solid #ffff00;
+  border: 2px solid #ffff0032;
   border-radius: 3px;
   height: 60px;
   width: 100%;
   background-color: #000000;
   color: #ffff00;
-  font-family: runescape;
   font-size: 24px;
+  box-shadow: -3px -3px 5px 0px rgba(255, 255, 255, 0.3) !important;
+  transition: background-color 200ms ease-in, color 200ms ease-in;
+  font-family: jacquard12;
 }
+
 .card-editor__input-image::file-selector-button:hover {
   color: #000000;
-  background-color: #ffffff;
-  border: 2px solid #000000;
+  background-color: #cb8e019e;
   cursor: pointer;
 }
 
 .card-editor__button {
   font-weight: bold;
   padding: 0.5em;
-  border: 2px solid #ffff00;
+  border: 2px solid #ffff0032;
   border-radius: 3px;
   height: 60px;
   width: 100%;
   background-color: #000000;
   color: #ffff00;
-  font-family: runescape;
   font-size: 24px;
+  box-shadow: -3px -3px 5px 0px rgba(255, 255, 255, 0.3);
+  transition: background-color 200ms ease-in, color 200ms ease-in;
 }
 
-.card-editor__button:hover { 
+.card-editor__button:hover {
   color: #000000;
-  background-color: #ffffff;
-  border: 2px solid #000000;
+  background-color: #cb8e019e;
   cursor: pointer;
 }

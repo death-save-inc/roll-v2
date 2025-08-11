@@ -2,7 +2,7 @@ import * as THREE from "three";
 export class Raycaster {
     constructor(controller) {
         this.controller = controller
-        this.active = true
+        this.active = false
         this.init()
     }
 
@@ -41,8 +41,8 @@ export class Raycaster {
         }else{
             for (let i = 0; i < this.intersects.length; i++) {
                 if (this.intersects[i].object.type === "Mesh"){
-                    if (this.intersects[i].object.parent){
-                        const action = this.controller.interactions.find(action => action.id === this.intersects[i].object.parent.uuid )
+                    if (this.intersects[i].object){
+                        const action = this.controller.interactions.find(action => action.id === this.intersects[i].object.uuid )
                         if (action && action.hover){
                             action.hover()
                             return
@@ -57,8 +57,8 @@ export class Raycaster {
         if (!this.active) return
         for (let i = 0; i < this.intersects.length; i++) {
             if (this.intersects[i].object.type === "Mesh"){
-                if (this.intersects[i].object.parent){
-                    const action = this.controller.interactions.find(action => action.id === this.intersects[i].object.parent.uuid )
+                if (this.intersects[i].object){
+                    const action = this.controller.interactions.find(action => action.id === this.intersects[i].object.uuid )
                     if (action && action.click){
                         action.click()
                         return

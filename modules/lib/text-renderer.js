@@ -7,7 +7,7 @@ export class TextRenderer {
     this.loader = new FontLoader();
   }
 
-  createTextTexture(text, meshSize, scaleFactor = 1024,maxFontSize= null) {
+  createTextTexture(text, meshSize, scaleFactor = 1024,maxFontSize= null, font = "jacquard12", backgroundColor = "#00000000") {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
@@ -18,11 +18,10 @@ export class TextRenderer {
    // Apply flipping before drawing
     ctx.save();
 
-    ctx.fillStyle = "white";
+    ctx.fillStyle = backgroundColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "yellow";
     ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
 
     // Dynamically adjust font size to fit snugly
     let fontSize = Math.min(canvas.width / text.length, canvas.height * 0.8);
@@ -30,7 +29,7 @@ export class TextRenderer {
       fontSize = maxFontSize
     }
 
-    ctx.font = `bold ${fontSize}px runescape`;
+    ctx.font = `${fontSize}px ${font}`;
 
     // Measure actual text size
     let metrics = ctx.measureText(text);
@@ -41,13 +40,13 @@ export class TextRenderer {
     canvas.height = Math.ceil(textHeight + 0);
 
     // Redraw text on the resized canvas
-    ctx.fillStyle = "black";
+    ctx.fillStyle = backgroundColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#FFFF00";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    ctx.font = `bold ${fontSize}px runescape`;
+    ctx.font = `${fontSize}px ${font}`;
     ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
     // Create high-resolution texture

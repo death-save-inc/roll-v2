@@ -1,15 +1,15 @@
 import { compress } from "../lib/compress.js";
+import { EventBus } from "../lib/eventbus.js";
 
 export class CardUI {
-    constructor(card) {
-        this.card = card;
+    constructor(player) {
+        this.player = player;
         this.template = null
         this.develop = true
     }
 
     async init() {
         if (this.develop){
-            console.log("(re)loading template")
             this.template = await this.loadTemplate("../templates/card.html")
         }else if (!this.template){
             this.template = await this.loadTemplate("https://raw.githubusercontent.com/Roll-for-Initiative/roll-v2/refs/heads/main/templates/card.html")
@@ -61,6 +61,7 @@ export class CardUI {
         this.inputRollEl = this.element.querySelector(".card-editor__roll")
         this.inputRerollEl = this.element.querySelector(".card-editor__reroll")
         this.deleteBtnEl = this.element.querySelector(".card-editor__delete")
+        this.colorPicker = this.element.querySelector(".card-editor__color")
     }
 
     bindEvents() {
@@ -69,19 +70,20 @@ export class CardUI {
         this.inputImageEl.addEventListener("change", this.onImageChange.bind(this));
         this.inputModifierEl.addEventListener("change", this.onModifierChange.bind(this))
         this.deleteBtnEl.addEventListener("click", this.onDelete.bind(this))
+        this.colorPicker.addEventListener("change", this.onColorChange.bind(this));
     }
 
     onNameChange(e) {
-        this.card.updateName(e.target.value);
+        this.player.updateName(e.target.value);
     }
 
     onModifierChange(e){
-        this.card.updateModifier(e.target.value)
+        this.player.updateModifier(e.target.value)
     }
 
     onDelete(e){
-        this.card.delete()
-        this.hide()
+        EventBus.emit("player:delete", this.player);
+        this.hide();
     }
 
     toBase64(file) {
@@ -96,17 +98,22 @@ export class CardUI {
     async onImageChange(e) {
         // let url = window.URL.createObjectURL(e.target.files[0]);
         const url = await compress(e.target.files[0], 140);
-        this.card.setPicture(url, true);
+        this.player.setPicture(url, true);
         this.imageEl.src = url;
+        console.log('hi')
+    }
+
+    onColorChange(e){
+        this.player.updateDieColor(e.target.value)
     }
 
     async render() {
-        this.inputNameEl.value = this.card.name;
-        if (this.card.imageSrc) {
-            this.imageEl.src = this.card.imageSrc;
+        this.inputNameEl.value = this.player.name;
+        if (this.player.imageSrc) {
+            this.imageEl.src = this.player.imageSrc;
         }
-        this.inputModifierEl.value = this.card.modifier
-        this.inputRollEl.value = parseInt(this.card.roll) -  parseInt(this.card.modifier)
-        this.inputRerollEl.value = this.card.reRoll?  this.card.reRoll - this.card.modifier : "x"
+        this.inputModifierEl.value = this.player.modifier
+        this.inputRollEl.value = parseInt(this.player.roll) -  parseInt(this.player.modifier)
+        this.inputRerollEl.value = this.player.reroll?  this.player.reroll - this.player.modifier : "x"
     }
 }

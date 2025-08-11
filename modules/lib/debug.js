@@ -99,14 +99,11 @@ export class CannonDebugRenderer {
 
     _updateMesh(index, body, shape) {
         let mesh = this._meshes[index]
-        console.log(this._typeMatch(mesh, shape))
         if (!this._typeMatch(mesh, shape)) {
             if (mesh) {
-                console.log(shape.type)
                 this.scene.remove(mesh)
             }
             mesh = this._meshes[index] = this._createMesh(shape)
-            console.log("should be mesh", mesh)
 
         }
         this._scaleMesh(mesh, shape)

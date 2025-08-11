@@ -1,68 +1,61 @@
 import * as THREE from "three";
 import { Card } from "../actors/card.js";
-import { RollUI } from "../UI/roll.js";
-
-
-const delayAndAWait = (callback, time)=>{
-  return new Promise((resolve, _)=>{
-    setTimeout(()=>{
-      resolve(callback())
-    }, time)
-  })
-}
+import { EventBus } from "../lib/eventbus.js";
+import { delayAndAWait } from "../utils/utils.js";
 
 export class CardManager {
   constructor(controller) {
     this.controller = controller;
     this.cards = [];
-    this.init();
+
+    EventBus.on("spell:cast", async () => {
+      this.setStackShape();
+    });
+
+    EventBus.on("roll:complete", async (playerOrder) => {
+      delayAndAWait(async () => {
+        for (let i = 0; i < this.cards.length; i++) {
+          const playerData = playerOrder.find(
+            (p) => p.uuid === this.cards[i].uuid
+          );
+          if (playerData) {
+            this.cards[i].roll = playerData.roll;
+            this.cards[i].reroll = playerData.reroll;
+            this.cards[i].setRoll();
+            await this.cards[i].updateCardImage(i + 1);
+          }
+        }
+        this.setPolygonShape();
+      }, 1000);
+    });
   }
 
-  async init() {
-    const cards = this.readLocalStorage();
+  registerCard(card) {
+    this.cards.push(card);
+    this.setStackShape();
+  }
 
-    if (cards.length > 0) {
-      for (const card of cards) {
-          this.cards.push(await this.addCard(card));
-      }
-    } else {
-      this.cards.push(await this.addCard());
-      this.cards.push(await this.addCard());
-      this.cards.push(await this.addCard());
-      this.cards.push(await this.addCard());
-      this.cards.push(await this.addDM());
+  unregisterCard(card) {
+    const index = this.cards.findIndex((c) => c.uuid === card.uuid);
+    if (index !== -1) {
+      this.cards.splice(index, 1);
     }
-
-    window.addEventListener("roll", async ()=>{
-      this.controller.setRollView()
-      
-      
-      this.setStackShape();
-      this.cards = await this.roll()
-    await delayAndAWait(async ()=>{await this.controller.setCardView()}, 2000) 
-      
-      this.setFanShape();
-      
-    })
-
-    this.UI = new RollUI()
-    console.log(this.UI)
-    // this.demoLoop()
+    this.setStackShape();
   }
 
   randomDice(modifier, faceCount = 20) {
-    const rawRoll = Math.floor(Math.random() * faceCount) + 1
-    return rawRoll + parseInt(modifier)
+    const rawRoll = Math.floor(Math.random() * faceCount) + 1;
+    return rawRoll + parseInt(modifier);
   }
 
   async roll() {
     // group DM and players together
-    const allPlayers = this.cards
+    const allPlayers = this.cards;
 
     // do initial round of rolls
     allPlayers.forEach(async (player) => {
       player.reroll = null;
-      player.roll = await player.die.roll()//this.randomDice(player.modifier);
+      // player.roll = await player.die.roll()//this.randomDice(player.modifier);
     });
 
     // decide initial
@@ -75,8 +68,8 @@ export class CardManager {
       // if two players rolled the same, reroll until unique results
       if (playerA.roll === playerB.roll) {
         while (playerA.reroll === playerB.reroll) {
-          playerA.reroll = await playerA.die.roll()
-          playerB.reroll = await playerA.die.roll()
+          playerA.reroll = await playerA.die.roll();
+          playerB.reroll = await playerB.die.roll();
         }
 
         // swap positions if player B has a higher roll
@@ -88,42 +81,50 @@ export class CardManager {
 
       // playera
     }
-    allPlayers.forEach(player => player.setRoll())
+    allPlayers.forEach((player) => player.setRoll());
 
-    return allPlayers
+    return allPlayers;
   }
 
-  async demoLoop() {
-    this.setStackShape();
-    this.cards = await this.roll()
-    setTimeout(() => {
-      this.setPolygonShape();
-      setTimeout(() => {
-        this.setFanShape();
-        setTimeout(() => {
-          this.demoLoop();
-        }, 4000);
-      }, 4000);
-    }, 4000);
-  }
+  // async demoLoop() {
+  //   this.setStackShape();
+  //   this.cards = await this.roll();
+  //   setTimeout(() => {
+  //     this.setPolygonShape();
+  //     setTimeout(() => {
+  //       this.setFanShape();
+  //       setTimeout(() => {
+  //         this.demoLoop();
+  //       }, 4000);
+  //     }, 4000);
+  //   }, 4000);
+  // }
 
   async addCard(data) {
     if (data) {
-      const card = new Card(this.controller, data.name, data.uuid, data.imageSrc, "player", data.modifier);
-      await card._init()
-      return card
+      const card = new Card(
+        this.controller,
+        data.name,
+        data.uuid,
+        data.imageSrc,
+        "player",
+        data.modifier,
+        data.color
+      );
+      await card._init();
+      return card;
     } else {
       const card = Card.empty(this.controller);
-      await card._init()
-      return card
+      await card._init();
+      return card;
     }
   }
 
-  async addDM() {
-    const card = Card.dungeonMaster(this.controller)
-    await card._init()
-    return card
-  }
+  // async addDM() {
+  //   const card = Card.dungeonMaster(this.controller);
+  //   await card._init();
+  //   return card;
+  // }
 
   readLocalStorage() {
     const items = { ...localStorage };
@@ -136,22 +137,24 @@ export class CardManager {
     return cards;
   }
 
-  generatePolygon(sides, radius, centerX, centerY) {
+generatePolygon(sides, radius, centerX, centerY) {
     const points = [];
-    const rotation = sides % 2 === 1 ? -Math.PI / 2 : 0; // Rotate odd-sided polygons upwards
+    const rotation = Math.PI / 2; // Rotate so the first point is at the top
 
     for (let k = 0; k < sides; k++) {
-      let angle = (2 * Math.PI * k) / sides + rotation;
-      let x = centerX + radius * Math.cos(-angle);
-      let y = centerY + radius * Math.sin(-angle);
-      points.push({ x, y });
+        let angle = (2 * Math.PI * k) / sides + rotation; // Negative for clockwise direction
+        let x = centerX + radius * Math.cos(angle);
+        let y = centerY + radius * Math.sin(angle);
+        points.push({ x, y });
     }
     return points;
-  }
+}
 
   setStackShape() {
     for (let i = 0; i < this.cards.length; i++) {
-      this.cards[i].desiredPosition = new THREE.Vector3(0, i * -0.2 + 2, 0);
+      this.cards[i].desiredPosition = new THREE.Vector3(0, i * -0.2 + 4, 0);
+      // this.cards[i].desiredPosition = new THREE.Vector3(0, 3, 0);
+
       this.cards[i].desiredRotation = new THREE.Quaternion().setFromEuler(
         new THREE.Euler(-90 * (Math.PI / 180), 0, 0, "XYZ")
       );
@@ -159,9 +162,9 @@ export class CardManager {
   }
 
   setPolygonShape() {
-    const coordinates = this.generatePolygon(this.cards.length, 5, 0, 7);
-    console.log(coordinates);
+    const coordinates = this.generatePolygon(this.cards.length, 6, 0, 12);
     for (let i = 0; i < this.cards.length; i++) {
+
       this.cards[i].desiredPosition = new THREE.Vector3(
         coordinates[i].x,
         coordinates[i].y,
@@ -193,6 +196,4 @@ export class CardManager {
       );
     }
   }
-
-  
 }

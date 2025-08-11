@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { EventBus } from "../lib/eventbus.js";
 
 export class LightningEffect {
   constructor(scene, maxBrightness, minBrightness) {
@@ -11,12 +12,23 @@ export class LightningEffect {
   }
 
   init() {
-    this.light = new THREE.DirectionalLight(new THREE.Color().setRGB(1, 1, 1), 0);
+    this.light = new THREE.DirectionalLight(
+      new THREE.Color().setRGB(1, 1, 1),
+      0
+    );
     this.light.castShadow = true;
     this.scene.add(this.light);
     this.nextFlash = this.calcNextFlash();
     this.ready = true;
-    this.flashTimer()
+    this.flashTimer();
+
+    EventBus.on("spell:cast", () => {
+      this.fillFlashBuffer();
+          for (const flash of this.flashBuffer) {
+            this.flash(flash);
+          }
+          this.setBrightness(0);
+        }, this.randomRange(4, 8) * 1000);
   }
 
   fillFlashBuffer() {
@@ -25,7 +37,7 @@ export class LightningEffect {
     for (let i = 0; i < r; i++) {
       this.flashBuffer.push({
         intensity: this.randomRange(this.minBrightness, this.maxBrightness),
-        delay: this.randomRange(1,2) * 100,
+        delay: this.randomRange(1, 2) * 100,
       });
     }
   }
@@ -38,7 +50,7 @@ export class LightningEffect {
           await this.flash(flash);
         }
         clearTimeout(timeout);
-        this.setBrightness(0)
+        this.setBrightness(0);
         resolve();
       }, this.randomRange(4, 8) * 1000);
     });
@@ -46,11 +58,11 @@ export class LightningEffect {
 
   flash(flash) {
     return new Promise((resolve, _) => {
-        this.setBrightness(flash.intensity);
-        setTimeout(()=>{
-          this.setBrightness(0)
-          resolve();
-        },flash.delay)
+      this.setBrightness(flash.intensity);
+      setTimeout(() => {
+        this.setBrightness(0);
+        resolve();
+      }, flash.delay);
     });
   }
 
@@ -74,6 +86,5 @@ export class LightningEffect {
     this.light.intensity = brightness;
   }
 
-  async update() {
-  }
+  async update() {}
 }

@@ -14,13 +14,13 @@ export class Brazier extends Actor {
   async _init() {
     const model = await this.controller.loadModel("assets/models/brazier2.glb");
 
-    model.scene.children[0].material = new THREE.MeshPhongMaterial({
-      color: new THREE.Color().setRGB(180 / 255, 180 / 255, 180 / 255),
-    });
+    // model.scene.children[0].material = new THREE.MeshPhongMaterial({
+    //   color: new THREE.Color().setRGB(180 / 255, 180 / 255, 180 / 255),
+    // });
 
-    model.scene.children[1].material = new THREE.MeshPhongMaterial({
-      color: new THREE.Color().setRGB(150 / 255, 150 / 255, 150 / 255),
-    });
+    // model.scene.children[1].material = new THREE.MeshPhongMaterial({
+    //   color: new THREE.Color().setRGB(150 / 255, 150 / 255, 150 / 255),
+    // });
     model.scene.children[0].castShadow = true;
     model.scene.children[0].receiveShadow = true;
     model.scene.children[1].castShadow = true;
@@ -32,15 +32,14 @@ export class Brazier extends Actor {
 
     this.fire = new FireEffect(
       this.controller,
-      new THREE.Vector3(this.position.x, this.position.y + 3, this.position.z),
+      new THREE.Vector3(this.position.x, this.position.y + 4, this.position.z),
       0.5,
       6,
       400,
-      7,
+      0.5,
       0.0125
     );
     this.ready = true;
-
   }
 
   update() {

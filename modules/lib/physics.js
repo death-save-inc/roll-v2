@@ -1,6 +1,5 @@
 import * as CANNON from "cannon"
 import * as THREE from "three"
-import { CannonDebugRenderer } from "./debug.js"
 export class Physics {
     constructor(controller) {
         this.controller = controller
@@ -51,6 +50,10 @@ export class Physics {
 
     addBody(body) {
         this.world.addBody(body)
+    }
+
+    removeBody(body){
+      this.world.removeBody(body)
     }
 
     update(delta) {

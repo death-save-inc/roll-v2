@@ -19,11 +19,14 @@ export class FireEffect {
     this.radius = radius;
     this.height = height;
     this.particleCount = particleCount;
-    this.intensity = intensity;
+    this.intensity = intensity * 10;
     this.speed = speed;
     this.ready = false;
+    this.show = true
+    console.log("controller", controller.cameraController);
 
     this.init();
+
   }
 
   init() {
@@ -32,17 +35,23 @@ export class FireEffect {
       this.height,
       this.particleCount
     );
-    const material = new particleFire.Material({ color: 0xaaaaaa });
-    material.setPerspective(this.controller.cameraController.camera.fov, window.innerHeight);
+    const material = new particleFire.Material({ color: 0xffbb00 });
+    material.setPerspective(
+      this.controller.cameraController.camera.fov,
+      window.innerHeight
+    );
     this.particleFireMesh = new THREE.Points(geometry, material);
     this.particleFireMesh.position.set(
       this.position.x,
       this.position.y,
       this.position.z
     );
+
+    this.particleFireMesh.scale.set(1.8, 1, 1.8);
+
     this.controller.scene.add(this.particleFireMesh);
 
-    this.light = new THREE.PointLight(0xffffff, this.intensity, 0, 1.75);
+    this.light = new THREE.PointLight(0xffbb00, this.intensity, 0, 1.75);
     this.light.position.set(
       this.position.x,
       this.position.y + 1,
@@ -57,8 +66,11 @@ export class FireEffect {
     if (!this.ready) return;
     this.particleFireMesh.material.update(Math.random() * this.speed);
     this.light.intensity += randomRange(-0.4, 0.4);
+    
+    
     if (this.light.intensity < 0 || this.light.intensity > this.intensity + 2) {
       this.light.intensity = this.intensity;
     }
+    this.particleFireMesh.visible = this.show
   }
 }

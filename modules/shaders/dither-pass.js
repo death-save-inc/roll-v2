@@ -2,7 +2,6 @@ import { DitherShader } from './dither-shader.js'
 
 export function DitherPassGen({ THREE, Pass, FullScreenQuad }) {
 
-  // expose
   return class DitherPass extends Pass {
 
     constructor({
@@ -17,14 +16,15 @@ export function DitherPassGen({ THREE, Pass, FullScreenQuad }) {
         fragmentShader: DitherShader.fragmentShader,
       }));
 
-      this._fsQuad.material.uniforms['resolution'].value = resolution; // radial distortion coeff of term r^2
+      this._fsQuad.material.uniforms['resolution'].value = resolution;
       this._fsQuad.material.uniforms['bias'].value = bias;
 
       this._uniforms = this._fsQuad.material.uniforms;
     }
 
     render(renderer, writeBuffer, readBuffer) {
-      this._fsQuad.material.uniforms['textureSampler'].value = readBuffer.texture
+      this._fsQuad.material.uniforms['textureSampler'].value = readBuffer.texture // Update time uniform
+      this._fsQuad.material.uniforms['uTime'].value = performance.now() / 10000000000; // Convert to seconds
 
       if (this.renderToScreen) {
         renderer.setRenderTarget(null);
