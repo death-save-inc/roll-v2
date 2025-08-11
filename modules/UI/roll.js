@@ -4,20 +4,14 @@ import { LoadTemplate } from "../lib/template.js";
 import { Config } from "../lib/config.js";
 
 export class RollUI {
-  constructor(card) {
+  constructor() {
     this.template = null;
     this.develop = Config.instance.get("develop");
     this.init();
   }
 
   async init() {
-    if (this.develop) {
-      this.template = await LoadTemplate("../templates/roll-button.html");
-    } else if (!this.template) {
-      this.template = await LoadTemplate(
-        "https://raw.githubusercontent.com/death-save-inc/roll-v2/refs/heads/main/templates/roll-button.html"
-      );
-    }
+    this.template = await LoadTemplate("roll-button.html");
     this.createElement();
     this.findElements();
     this.findElements();

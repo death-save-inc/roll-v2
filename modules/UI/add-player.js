@@ -1,18 +1,15 @@
 
 import { EventBus } from "../lib/eventbus.js";
-import { Config } from "../lib/config.js";
 import { LoadTemplate } from "../lib/template.js";
 
 export class AddPlayerUI {
     constructor() {
         this.template = null;
-        console.log("config", Config.instance);
-        this.develop = Config.instance.get("develop");
         this.init();
     }
 
     async init() {
-        this.template = await LoadTemplate("add-player-button.html", this.develop);
+        this.template = await LoadTemplate("add-player-button.html");
         this.createElement();
         this.findElements();
         this.bindEvents();

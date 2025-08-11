@@ -1,9 +1,16 @@
-export const LoadTemplate = async (path, develop = false) => {
+import { Config } from "./config.js";
+
+export const LoadTemplate = async (path) => {
+  const develop = Config.instance.get("develop");
   if (develop) {
     return await (await fetch(`../templates/${path}`)).text();
   }
+  const domain = Config.instance.get("domain");
+  if (!domain) {
+    throw new Error("Domain not set in config");
+  }
+
   return await (
-    await fetch(`https://death-save-inc.github.io/roll-v2/templates/${path}`)
+    await fetch(`${domain}/${path}`)
   ).text();
 };
-

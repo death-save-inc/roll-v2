@@ -1,17 +1,15 @@
 import { compress } from "../lib/compress.js";
 import { EventBus } from "../lib/eventbus.js";
 import { LoadTemplate } from "../lib/template.js";
-import { Config } from "../lib/config.js";
 
 export class CardUI {
     constructor(player) {
         this.player = player;
         this.template = null
-        this.develop = Config.instance.get("develop");
     }
 
     async init() {
-       this.template = await LoadTemplate("card.html", this.develop);
+       this.template = await LoadTemplate("card.html");
         this.findElements();
         this.findElements();
         this.bindEvents();
