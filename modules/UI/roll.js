@@ -13,7 +13,7 @@ export class RollUI {
       this.template = await this.loadTemplate("../templates/roll-button.html");
     } else if (!this.template) {
       this.template = await this.loadTemplate(
-        "https://raw.githubusercontent.com/Roll-for-Initiative/roll-v2/refs/heads/main/templates/roll-button.html"
+        "https://raw.githubusercontent.com/death-save-inc/roll-v2/refs/heads/main/templates/roll-button.html"
       );
     }
     this.createElement();

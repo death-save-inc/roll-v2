@@ -13,7 +13,7 @@ export class AddPlayerUI {
             this.template = await this.loadTemplate("../templates/add-player-button.html");
         } else if (!this.template) {
             this.template = await this.loadTemplate(
-                "https://raw.githubusercontent.com/Roll-for-Initiative/roll-v2/refs/heads/main/templates/add-player-button.html"
+                "https://raw.githubusercontent.com/death-save-inc/roll-v2/refs/heads/main/templates/add-player-button.html"
             );
         }
         this.createElement();
