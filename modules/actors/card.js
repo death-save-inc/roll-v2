@@ -3,6 +3,7 @@ import { Actor } from "./actor.js";
 import { Interaction } from "../lib/interaction.js";
 import { CardUI } from "../UI/card.js";
 import { TextRenderer } from "../lib/text-renderer.js";
+import { LocalStorageManager } from "../lib/manage-local-storage.js";
 
 export class Card extends Actor {
   constructor(controller, name, uuid, imageSrc, playerType, modifier, color) {
@@ -51,24 +52,43 @@ export class Card extends Actor {
       )
     );
 
-    this.updateLocalStorage();
+    await this.updateLocalStorage();
     this.register();
     this.controller.cardManager.registerCard(this);
   }
 
-  updateLocalStorage() {
-    console.log("updating local storage");
-    localStorage.setItem(
-      this.uuid,
-      JSON.stringify({
+  async updateLocalStorage() {
+    try {
+      const storageManager = LocalStorageManager.getInstance();
+      const saveData = storageManager.getCurrentSave();
+      const players = await saveData.get("players");
+
+      if (!Array.isArray(players)) {
+        console.warn("Card.updateLocalStorage: players array missing or invalid:", players);
+        return;
+      }
+
+      const index = players.findIndex((p) => p.uuid === this.uuid);
+      const payload = {
         name: this.name,
         uuid: this.uuid,
         imageSrc: this.imageSrc,
         type: this.type,
         modifier: this.modifier,
         color: this.color,
-      })
-    );
+      };
+
+      if (index !== -1) {
+        players[index] = payload;
+      } else {
+        players.push(payload);
+      }
+
+      await storageManager.saveToExistingSlot("players", players);
+      console.log("Card.updateLocalStorage: saved player entry", this.uuid);
+    } catch (error) {
+      console.error("Card.updateLocalStorage failed:", error);
+    }
   }
 
   onClick() {
@@ -103,7 +123,26 @@ export class Card extends Actor {
     this.updateLocalStorage();
   }
 
-  setRoll(){}
+  async updateImageSrc(imageSrc) {
+    this.imageSrc = imageSrc;
+    this.updateCardImage(0);
+    await this.updateLocalStorage();
+    // notify linked player owner if exists (avoid triggering a loop)
+    if (this.owner) {
+      try {
+        // update owner's property directly and persist
+        this.owner.imageSrc = imageSrc;
+        if (typeof this.owner.saveUpdate === 'function') {
+          this.owner.saveUpdate();
+        }
+        console.log('Card.updateImageSrc: owner updated imageSrc for', this.uuid);
+      } catch (err) {
+        console.warn('Failed to notify player of image change', err);
+      }
+    }
+  }
+
+  setRoll() {}
 
   update() {
     if (!this.mesh) return;
@@ -118,7 +157,7 @@ export class Card extends Actor {
   }
 
   delete() {
-    this.controller.setSelectedObjects([])
+    this.controller.setSelectedObjects([]);
 
     if (this.mesh) {
       this.controller.scene.remove(this.mesh);
@@ -140,9 +179,7 @@ export class Card extends Actor {
   }
 
   async generateCardTexture(idx) {
-    console.log(this.imageSrc);
     if (!this.imageSrc) {
-      console.log("no imageSrc, using default", this.name);
       this.imageSrc = "assets/models/textures/dragon.jpg";
     }
 
@@ -248,7 +285,6 @@ export class Card extends Actor {
     ctx.textBaseline = "bottom";
     ctx.fillText(this.name, canvas.width / 2, canvas.height - padding * 2);
 
-    //Create Three.js Materials
     return new THREE.CanvasTexture(canvas);
   }
 

@@ -1,0 +1,21 @@
+.hud {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;  /* left | center | right */
+  grid-template-rows: auto auto auto auto;
+  grid-template-areas:
+    ". . settings"
+    ". . ."
+    ". . menu-button"
+    ". roll-button .";
+  gap: 12px;
+}
+
+/* Named slots */
+.settings    { grid-area: settings; }
+.menu-button { grid-area: menu-button; }
+.roll-button { grid-area: roll-button; }

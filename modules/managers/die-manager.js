@@ -219,8 +219,12 @@ export class DieManager {
     const allPlayers = this.controller.dungeonManager.players;
 
     allPlayers.forEach(async (player) => {
-      player.reroll = null;
-      player.roll = await player.die.roll();
+      if (player) { // Ensure player is not undefined or null
+        player.reroll = null;
+        player.roll = await player.die.roll();
+      } else {
+        console.warn("Encountered undefined or null player in DieManager.roll.");
+      }
     });
 
     allPlayers.sort((a, b) => b.roll - a.roll);

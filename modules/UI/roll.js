@@ -1,4 +1,3 @@
-import { compress } from "../lib/compress.js";
 import { EventBus } from "../lib/eventbus.js";
 import { LoadTemplate } from "../lib/template.js";
 import { Config } from "../lib/config.js";
@@ -14,7 +13,6 @@ export class RollUI {
     this.template = await LoadTemplate("roll-button.html");
     this.createElement();
     this.findElements();
-    this.findElements();
     this.bindEvents();
   }
 
@@ -25,7 +23,13 @@ export class RollUI {
   createElement() {
     this.element = document.createElement("div");
     this.element.innerHTML = this.template;
-    document.body.appendChild(this.element);
+    this.element.classList.add("roll-actions")
+    const parent = document.querySelector(".hud");
+    if (!parent) {
+      console.error("No parent element found for RollUI");
+      return;
+    }
+    parent.appendChild(this.element);
   }
 
   hide(e) {
@@ -39,7 +43,7 @@ export class RollUI {
   }
 
   show(e) {
-    this.element.style.display = "unset";
+    this.element.style.display = "";
   }
 
   click() {

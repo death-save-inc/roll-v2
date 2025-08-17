@@ -1,12 +1,7 @@
 .player-actions {
-    position: fixed;
-    z-index: 100;
+    grid-area: settings;
     display: flex;
-    justify-content: end;
-    width: 100vw;
-    font-family: jacquard12;
-    right: 48px;
-    top: 24px;
+    justify-content: flex-end;
 }
 
 .player-actions__button {
@@ -15,4 +10,5 @@
     color: #FFff00;
     font-weight: 500;
     background: transparent;
+    min-width: 100px;
 }

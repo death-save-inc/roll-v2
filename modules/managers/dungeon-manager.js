@@ -1,72 +1,95 @@
 import { Player } from "../actors/player.js";
 import { RollUI } from "../UI/roll.js";
-import { AddPlayerUI } from "../UI/add-player.js";
+import { PlayersEditor } from "../UI/players-editor.js";
 import { EventBus } from "../lib/eventbus.js";
-
+import { LocalStorageManager } from "../lib/manage-local-storage.js";
+import { PlayerEditorHud } from "../UI/players-editor-hud.js";
+import { SaveSlotsUI } from "../UI/save-slots.js";
 export class DungeonManager {
   constructor(controller) {
     this.controller = controller;
     this.players = [];
-    this.init();
   }
 
   async init() {
+    this.playersEditor = new PlayersEditor();
     this.RollUI = new RollUI();
-    this.AddPlayerUI = new AddPlayerUI();
+    this.playerEditorHud = new PlayerEditorHud()
+    this.saveSlotsUI = new SaveSlotsUI()
 
-    const players = this.readLocalStorage();
-
-    console.log("DungeonManager init", players);
+    const storageManager = LocalStorageManager.getInstance();
+    const saveData = storageManager.getCurrentSave();
+    const players = await saveData.get("players");
 
     if (players.length > 0) {
       for (const player of players) {
-        this.players.push(this.addPlayer(player));
+        const addedPlayer = this.addPlayer(player);
       }
     } else {
       for (let i = 0; i < 5; i++) {
-        this.players.push(Player.empty(this.controller));
+        const newPlayer = Player.empty(this.controller);
+        this.players.push(newPlayer);
       }
+      saveData.set("players", this.players.map((p) => p.toJSON()));
+      storageManager.saveToExistingSlot("players", this.players.map((p) => p.toJSON()));
     }
+
     EventBus.on("player:add", () => {
       this.addPlayer(null);
     });
 
     EventBus.on("player:delete", (player) => {
-      this.deletePlayer(player)
-    })
+      this.deletePlayer(player);
+    });
   }
 
-  resetPlayerRolls(){
+  resetPlayerRolls() {
     for (const player of this.players) {
-      player.roll= null;
+        if (player) { // Ensure player is not undefined or null
+            player.roll = null;
+        } else {
+            console.warn("Encountered undefined or null player in resetPlayerRolls.");
+        }
     }
   }
 
   addPlayer(playerData) {
-    if (!playerData) {
-      return Player.empty(this.controller);
+    if (!playerData || !playerData.name || !playerData.uuid) {
+        console.warn("Invalid player data provided to addPlayer:", playerData);
+        return null;
     }
-    else if (playerData && playerData.name === "Dungeon master") {
-      Player.dungeonMaster(this.controller);
+
+    if (playerData.name === "Dungeon master") {
+        const dmPlayer = Player.dungeonMaster(this.controller);
+        this.players.push(dmPlayer);
+        return dmPlayer;
+    } else {
+        console.log("Retrieved players from local storage:", LocalStorageManager.getInstance().getDataByKey("players"));
+        const existingPlayer = LocalStorageManager.getInstance().getDataByKey("players")?.find(player => player.uuid === playerData.uuid);
+        if (existingPlayer) {
+            const newPlayer = new Player(
+                this.controller,
+                playerData.name,
+                playerData.uuid,
+                playerData.imageSrc,
+                playerData.type,
+                playerData.modifier,
+                playerData.color
+            );
+            this.players.push(newPlayer);
+            return newPlayer;
+        }
     }
-    else if (localStorage.getItem(playerData.uuid)) {
-      return new Player(
-        this.controller,
-        playerData.name,
-        playerData.uuid,
-        playerData.imageSrc,
-        playerData.type,
-        playerData.modifier,
-        playerData.color
-      );
-    }
+
+    console.warn("Player data not found in local storage:", playerData);
+    return null;
   }
 
   deletePlayer(player) {
     const index = this.players.findIndex((p) => p.uuid === player.uuid);
     if (index !== -1) {
       localStorage.removeItem(player.uuid);
-      this.players[index].delete()
+      this.players[index].delete();
       this.players.splice(index, 1);
     }
   }

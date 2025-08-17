@@ -70,7 +70,10 @@ export class Controller {
     return this.textureLoader.load(text);
   }
 
-  _init() {
+  async _init() {
+    this.renderActions = [];
+    this.interactions = [];
+    this.selectedObjects = [];
     this.scene = new THREE.Scene();
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -90,24 +93,23 @@ export class Controller {
     this.scene.fog = new THREE.FogExp2(0x000000, 0.01);
     this.renderer.setClearColor(this.scene.fog.color);
 
+    this.cameraController = new CameraController(
+      this,
+      this.renderer.domElement
+    );
+
     //here pass renderer
 
     this.modelLoader = new ModelLoader();
     this.textLoader = new TextLoader(this);
     this.textureLoader = new TextureLoader(this);
     this.raycaster = new Raycaster(this);
-    this.renderActions = [];
-    this.interactions = [];
-    this.selectedObjects = [];
 
-    this.dungeonManager = new DungeonManager(this);
     this.cardManager = new CardManager(this);
     this.dieManager = new DieManager(this, this.cardManager.players);
+    this.dungeonManager = new DungeonManager(this);
+    await this.dungeonManager.init();
     document.body.appendChild(this.renderer.domElement);
-    this.cameraController = new CameraController(
-      this,
-      this.renderer.domElement
-    );
 
     this.spellVfxPipeline = new SpellVfxPipeline(this);
 

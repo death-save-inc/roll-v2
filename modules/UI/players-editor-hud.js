@@ -1,7 +1,7 @@
 import { EventBus } from "../lib/eventbus.js";
 import { LoadTemplate } from "../lib/template.js";
 
-export class AddPlayerUI {
+export class PlayerEditorHud {
     constructor() {
         this.template = null;
         this.init();
@@ -39,12 +39,18 @@ export class AddPlayerUI {
     }
 
     findElements() {
+        this.openPlayerEditorEl = this.element.querySelector(".open-player-editor");
         this.addButtonEl = this.element.querySelector(".player-actions__button");
+        this.settingsButtonEl = this.element.querySelector(".open-settings");
     }
 
     bindEvents() {
-        this.addButtonEl.addEventListener("click", () => {
-            EventBus.emit('player:add', {});
+        this.openPlayerEditorEl.addEventListener("click", () => {
+            EventBus.emit('playersEditor:show', {});
+        });
+
+        this.settingsButtonEl.addEventListener("click", () => {
+            EventBus.emit('saveSlots:show', {});
         });
     }
 }

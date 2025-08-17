@@ -9,8 +9,8 @@ export class CardUI {
     }
 
     async init() {
-       this.template = await LoadTemplate("card.html");
-        this.findElements();
+        this.template = await LoadTemplate("card.html");
+        this.createElement();
         this.findElements();
         this.bindEvents();
         await this.render();
@@ -87,9 +87,8 @@ export class CardUI {
     async onImageChange(e) {
         // let url = window.URL.createObjectURL(e.target.files[0]);
         const url = await compress(e.target.files[0], 140);
-        this.player.setPicture(url, true);
+        await this.player.updateImageSrc(url, true);
         this.imageEl.src = url;
-        console.log('hi')
     }
 
     onColorChange(e){
