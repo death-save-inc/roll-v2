@@ -52,7 +52,6 @@ export function useEventBridge({ state, setResults }: Options): void {
 
     on('scene:ready', onSceneReady)
     return () => off('scene:ready', onSceneReady)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // ---- Sync player changes to ThreeJS once scene is ready ------------------
