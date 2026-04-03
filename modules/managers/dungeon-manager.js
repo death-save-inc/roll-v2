@@ -1,10 +1,9 @@
 import { Player } from "../actors/player.js";
-import { RollUI } from "../UI/roll.js";
-import { PlayersEditor } from "../UI/players-editor.js";
 import { EventBus } from "../lib/eventbus.js";
-import { LocalStorageManager } from "../lib/manage-local-storage.js";
-import { PlayerEditorHud } from "../UI/players-editor-hud.js";
-import { SaveSlotsUI } from "../UI/save-slots.js";
+
+// DungeonManager is now driven by the React UI via the EventBus.
+// Players are created, updated, and deleted in response to events emitted
+// by the React layer — no vanilla DOM UI or localStorage bootstrapping here.
 export class DungeonManager {
   constructor(controller) {
     this.controller = controller;
@@ -12,97 +11,100 @@ export class DungeonManager {
   }
 
   async init() {
-    this.playersEditor = new PlayersEditor();
-    this.RollUI = new RollUI();
-    this.playerEditorHud = new PlayerEditorHud()
-    this.saveSlotsUI = new SaveSlotsUI()
-
-    const storageManager = LocalStorageManager.getInstance();
-    const saveData = storageManager.getCurrentSave();
-    const players = await saveData.get("players");
-
-    if (players.length > 0) {
-      for (const player of players) {
-        const addedPlayer = this.addPlayer(player);
-      }
-    } else {
-      for (let i = 0; i < 5; i++) {
-        const newPlayer = Player.empty(this.controller);
-        this.players.push(newPlayer);
-      }
-      saveData.set("players", this.players.map((p) => p.toJSON()));
-      storageManager.saveToExistingSlot("players", this.players.map((p) => p.toJSON()));
-    }
-
-    EventBus.on("player:add", () => {
-      this.addPlayer(null);
+    EventBus.on("player:add", (playerData) => {
+      this.addPlayer(playerData);
     });
 
-    EventBus.on("player:delete", (player) => {
-      this.deletePlayer(player);
+    EventBus.on("player:delete", (playerData) => {
+      this.deletePlayer(playerData);
     });
+
+    EventBus.on("player:update", (playerData) => {
+      this.updatePlayer(playerData);
+    });
+
+    // Signal to the React UI that ThreeJS is ready for player events
+    EventBus.emit("scene:ready");
   }
 
   resetPlayerRolls() {
     for (const player of this.players) {
-        if (player) { // Ensure player is not undefined or null
-            player.roll = null;
-        } else {
-            console.warn("Encountered undefined or null player in resetPlayerRolls.");
-        }
+      if (player) {
+        player.roll = null;
+      }
     }
   }
 
   addPlayer(playerData) {
     if (!playerData || !playerData.name || !playerData.uuid) {
-        console.warn("Invalid player data provided to addPlayer:", playerData);
-        return null;
+      console.warn("DungeonManager.addPlayer: invalid payload", playerData);
+      return null;
     }
 
-    if (playerData.name === "Dungeon master") {
-        const dmPlayer = Player.dungeonMaster(this.controller);
-        this.players.push(dmPlayer);
-        return dmPlayer;
-    } else {
-        console.log("Retrieved players from local storage:", LocalStorageManager.getInstance().getDataByKey("players"));
-        const existingPlayer = LocalStorageManager.getInstance().getDataByKey("players")?.find(player => player.uuid === playerData.uuid);
-        if (existingPlayer) {
-            const newPlayer = new Player(
-                this.controller,
-                playerData.name,
-                playerData.uuid,
-                playerData.imageSrc,
-                playerData.type,
-                playerData.modifier,
-                playerData.color
-            );
-            this.players.push(newPlayer);
-            return newPlayer;
-        }
+    // Avoid duplicates if React re-emits for an already-known player
+    const existing = this.players.find((p) => p.uuid === playerData.uuid);
+    if (existing) {
+      console.log("DungeonManager: Player already exists", playerData.uuid);
+      return existing;
     }
 
-    console.warn("Player data not found in local storage:", playerData);
-    return null;
+    console.log(
+      "DungeonManager: Creating new player",
+      playerData.name,
+      playerData.uuid,
+    );
+
+    const newPlayer = new Player(
+      this.controller,
+      playerData.name,
+      playerData.uuid,
+      playerData.imageSrc || null,
+      playerData.type || "player",
+      playerData.modifier || 0,
+      playerData.color || 0xff00ff,
+    );
+    this.players.push(newPlayer);
+
+    // Ensure card initialization completes (but don't block)
+    newPlayer.card.initPromise
+      .then(() => {
+        console.log(
+          "DungeonManager: Card initialized for player",
+          newPlayer.uuid,
+        );
+      })
+      .catch((err) => {
+        console.error(
+          "Failed to initialize card for player:",
+          newPlayer.uuid,
+          err,
+        );
+      });
+
+    return newPlayer;
   }
 
-  deletePlayer(player) {
-    const index = this.players.findIndex((p) => p.uuid === player.uuid);
+  updatePlayer(playerData) {
+    if (!playerData || !playerData.uuid) return;
+    const player = this.players.find((p) => p.uuid === playerData.uuid);
+    if (!player) return;
+
+    if (playerData.name !== undefined) player.name = playerData.name;
+    if (playerData.modifier !== undefined)
+      player.modifier = playerData.modifier;
+    if (
+      playerData.imageSrc !== undefined &&
+      playerData.imageSrc !== player.imageSrc
+    ) {
+      player.setPicture(playerData.imageSrc);
+    }
+  }
+
+  deletePlayer(playerData) {
+    const index = this.players.findIndex((p) => p.uuid === playerData.uuid);
     if (index !== -1) {
-      localStorage.removeItem(player.uuid);
       this.players[index].delete();
       this.players.splice(index, 1);
     }
-  }
-
-  readLocalStorage() {
-    const items = { ...localStorage };
-    const players = [];
-
-    for (const [key, value] of Object.entries(items)) {
-      if (key.startsWith("player")) {
-        players.push({ ...JSON.parse(value) });
-      }
-    }
-    return players;
   }
 }

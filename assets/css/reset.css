@@ -105,7 +105,8 @@ nav,
 section {
   display: block;
 }
-body, html {
+body,
+html {
   line-height: 1;
   font-family: jacquard12, sans-serif;
   background: #000000;
@@ -138,15 +139,15 @@ body,
 
 @font-face {
   font-family: runescape;
-  src: url(../assets/RuneScape-Chat-07.woff);
+  src: url(../fonts/RuneScape-Chat-07.woff);
 }
 
 @font-face {
   font-family: lithops;
-  src: url(../assets/Lithops-Regular.woff);
+  src: url(../fonts/Lithops-Regular.woff);
 }
 
 @font-face {
   font-family: jacquard12;
-  src: url(../assets/Jacquard12-Regular.ttf);
+  src: url(../fonts/Jacquard12-Regular.ttf);
 }

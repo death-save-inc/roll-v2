@@ -21,13 +21,14 @@ export class Card extends Actor {
     this.modifier = modifier || 0;
     this.color = color || 0xff00ff;
 
-    this.init();
+    // Initialize asynchronously but track readiness
+    this.initPromise = this.init();
   }
   static empty(controller) {
     return new Card(
       controller,
       "change me",
-      `card-${(crypto.randomUUID(), "assets/models/textures/dragon.jpg")}`
+      `card-${(crypto.randomUUID(), "assets/models/textures/dragon.jpg")}`,
     );
   }
 
@@ -37,7 +38,7 @@ export class Card extends Actor {
       "Dungeon master",
       `card-${crypto.randomUUID()}`,
       null,
-      "dm"
+      "dm",
     );
   }
 
@@ -48,8 +49,8 @@ export class Card extends Actor {
       new Interaction(
         this.mesh.uuid,
         this.onClick.bind(this),
-        this.onHover.bind(this)
-      )
+        this.onHover.bind(this),
+      ),
     );
 
     await this.updateLocalStorage();
@@ -64,7 +65,10 @@ export class Card extends Actor {
       const players = await saveData.get("players");
 
       if (!Array.isArray(players)) {
-        console.warn("Card.updateLocalStorage: players array missing or invalid:", players);
+        console.warn(
+          "Card.updateLocalStorage: players array missing or invalid:",
+          players,
+        );
         return;
       }
 
@@ -132,12 +136,15 @@ export class Card extends Actor {
       try {
         // update owner's property directly and persist
         this.owner.imageSrc = imageSrc;
-        if (typeof this.owner.saveUpdate === 'function') {
+        if (typeof this.owner.saveUpdate === "function") {
           this.owner.saveUpdate();
         }
-        console.log('Card.updateImageSrc: owner updated imageSrc for', this.uuid);
+        console.log(
+          "Card.updateImageSrc: owner updated imageSrc for",
+          this.uuid,
+        );
       } catch (err) {
-        console.warn('Failed to notify player of image change', err);
+        console.warn("Failed to notify player of image change", err);
       }
     }
   }
@@ -172,7 +179,7 @@ export class Card extends Actor {
     let result = "";
     for (let i = 0; i < length; i++) {
       result += characters.charAt(
-        Math.floor(Math.random() * characters.length)
+        Math.floor(Math.random() * characters.length),
       );
     }
     return result;
@@ -259,7 +266,7 @@ export class Card extends Actor {
       yRadius,
       0,
       0,
-      Math.PI * 2
+      Math.PI * 2,
     );
     ctx.closePath();
     ctx.clip();
@@ -276,7 +283,7 @@ export class Card extends Actor {
     ctx.fillText(
       idx | 0,
       padding,
-      size.actualBoundingBoxAscent + padding * 1.5
+      size.actualBoundingBoxAscent + padding * 1.5,
     );
 
     //Bottom Name Centered
@@ -319,6 +326,10 @@ export class Card extends Actor {
     this.mesh.position.copy(this.position);
 
     this.controller.scene.add(this.mesh);
+    console.log(
+      `Card mesh created for ${this.name} (${this.uuid}) at position:`,
+      this.position,
+    );
   }
 
   async updateCardImage(idx) {
