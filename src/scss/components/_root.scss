@@ -1,0 +1,24 @@
+@use 'sass:meta';
+@use '../variables' as *;
+
+:root {
+  --#{$prefix}font-serif: #{meta.inspect($font-family-serif)};
+  --#{$prefix}font-charted: #{meta.inspect($font-family-charted)};
+
+  --rfi-black: #1a1b20;
+  --rfi-yellow: #fff000;
+  --rfi-gray: #595959;
+  --rfi-font-serif: $font-family-serif;
+  --rfi-font-display: $font-family-charted;
+  --rfi-font-body: $font-family-body;
+}
+
+#root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+}

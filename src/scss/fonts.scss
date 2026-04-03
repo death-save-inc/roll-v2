@@ -1,0 +1,58 @@
+@font-face {
+  font-family: 'RuneScape Chat';
+  src: url('@assets/fonts/RuneScape-Chat-07.eot');
+  src:
+    url('@assets/fonts/RuneScape-Chat-07.eot?#iefix') format('embedded-opentype'),
+    url('@assets/fonts/RuneScape-Chat-07.woff2') format('woff2'),
+    url('@assets/fonts/RuneScape-Chat-07.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'RuneScape Chat';
+  src: url('@assets/fonts/RuneScape-Chat-Bold-07.eot');
+  src:
+    url('@assets/fonts/RuneScape-Chat-Bold-07.eot?#iefix') format('embedded-opentype'),
+    url('@assets/fonts/RuneScape-Chat-Bold-07.woff2') format('woff2'),
+    url('@assets/fonts/RuneScape-Chat-Bold-07.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lithops';
+  src: url('@assets/fonts/Lithops-Regular.woff');
+  src:
+    url('@assets/fonts/Lithops-Regular.woff2') format('woff2'),
+    url('@assets/fonts/Lithops-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Jacquard 12 Charted';
+  src: url('@assets/fonts/Jacquard12-Charted-Regular.eot');
+  src:
+    url('@assets/fonts/Jacquard12-Charted-Regular.eot?#iefix') format('embedded-opentype'),
+    url('@assets/fonts/Jacquard12-Charted-Regular.woff2') format('woff2'),
+    url('@assets/fonts/Jacquard12-Charted-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Jacquard 12';
+  src: url('@assets/fonts/Jacquard12-Regular.eot');
+  src:
+    url('@assets/fonts/Jacquard12-Regular.eot?#iefix') format('embedded-opentype'),
+    url('@assets/fonts/Jacquard12-Regular.woff2') format('woff2'),
+    url('@assets/fonts/Jacquard12-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}

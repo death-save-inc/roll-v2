@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 
-import { CardUI } from '../UI/card.js'
 import { Interaction } from '../lib/interaction.js'
 import { LocalStorageManager } from '../lib/manage-local-storage.js'
 import { TextRenderer } from '../lib/text-renderer.js'

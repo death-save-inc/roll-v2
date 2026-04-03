@@ -1,0 +1,16 @@
+.player-setup {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+  padding-top: 9rem; /* clear the fixed modal title */
+}
+
+.player-setup__add-label {
+  color: var(--rfi-yellow);
+  font-family: var(--rfi-font-display);
+  font-size: 2rem;
+  line-height: 1;
+  text-align: center;
+  pointer-events: none;
+}

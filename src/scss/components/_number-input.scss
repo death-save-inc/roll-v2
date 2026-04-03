@@ -1,0 +1,67 @@
+.number-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.number-input__label {
+  color: var(--rfi-yellow);
+  font-family: var(--rfi-font-body);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.number-input__controls {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--rfi-yellow);
+  padding: 0.25rem 0.5rem;
+}
+
+.number-input__btn {
+  background: transparent;
+  border: none;
+  color: var(--rfi-yellow);
+  cursor: pointer;
+  font-family: var(--rfi-font-serif);
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0 0.25rem;
+  flex-shrink: 0;
+}
+
+.number-input__btn:hover {
+  opacity: 0.7;
+}
+
+.number-input__value {
+  color: var(--rfi-yellow);
+  font-family: var(--rfi-font-display);
+  font-size: 1.5rem;
+  text-align: center;
+  flex: 1;
+  min-width: 3ch;
+}
+
+/* Small variant — used in the navigation bar */
+.number-input--small .number-input__controls {
+  border: none;
+  padding: 0;
+}
+
+.number-input--small .number-input__value {
+  font-size: 3.25rem;
+  line-height: 0.8;
+}
+
+.number-input--small .number-input__btn {
+  font-size: 2rem;
+}
+
+.number-input--small .number-input__label {
+  font-size: 0.65rem;
+}

@@ -1,0 +1,15 @@
+.text-button {
+  pointer-events: auto;
+  background: transparent;
+  border: none;
+  color: var(--rfi-yellow);
+  cursor: pointer;
+  font-family: var(--rfi-font-display);
+  font-size: 3.25rem;
+  line-height: 0.8;
+  padding: 0;
+}
+
+.text-button:hover {
+  opacity: 0.8;
+}

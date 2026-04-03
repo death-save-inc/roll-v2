@@ -1,0 +1,34 @@
+.player-card {
+  border-color: var(--rfi-yellow);
+}
+
+.player-card--dm {
+  border-color: #c00;
+}
+
+.player-card__inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0.75rem;
+  background-size: cover;
+  background-position: center;
+}
+
+.player-card__delete {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 2;
+}
+
+.player-card__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
