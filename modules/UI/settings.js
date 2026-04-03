@@ -1,20 +1,18 @@
-
-
 export class SettingsButton {
-    constructor() {
-        this.button = document.createElement("button");
-        this.button.textContent = "Settings";
-        this.button.classList.add("settings-button");
-        this.bindEvents();
-    }
+  constructor() {
+    this.button = document.createElement('button')
+    this.button.textContent = 'Settings'
+    this.button.classList.add('settings-button')
+    this.bindEvents()
+  }
 
-    bindEvents() {
-        this.button.addEventListener("click", () => {
-            EventBus.emit("settings:toggle");
-        });
-    }
+  bindEvents() {
+    this.button.addEventListener('click', () => {
+      EventBus.emit('settings:toggle')
+    })
+  }
 
-    render() {
-        return this.button;
-    }
+  render() {
+    return this.button
+  }
 }

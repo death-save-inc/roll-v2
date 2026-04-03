@@ -1,14 +1,14 @@
 .player-actions {
-    grid-area: settings;
-    display: flex;
-    justify-content: flex-end;
+  grid-area: settings;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .player-actions__button {
-    font-family: jacquard12;
-    font-size: 75px;
-    color: #FFff00;
-    font-weight: 500;
-    background: transparent;
-    min-width: 100px;
+  font-family: jacquard12;
+  font-size: 75px;
+  color: #ffff00;
+  font-weight: 500;
+  background: transparent;
+  min-width: 100px;
 }

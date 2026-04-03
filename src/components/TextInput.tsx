@@ -1,18 +1,12 @@
 interface TextInputProps {
-  name: string;
-  id: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
+  name: string
+  id: string
+  value: string
+  onChange: (value: string) => void
+  placeholder?: string
 }
 
-export function TextInput({
-  name,
-  id,
-  value,
-  onChange,
-  placeholder,
-}: TextInputProps) {
+export function TextInput({ name, id, value, onChange, placeholder }: TextInputProps) {
   return (
     <div className="text-input">
       <label className="text-input__label" htmlFor={`${name}-${id}`}>
@@ -27,5 +21,5 @@ export function TextInput({
         onChange={(e) => onChange(e.target.value)}
       />
     </div>
-  );
+  )
 }

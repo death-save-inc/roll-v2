@@ -1,10 +1,9 @@
-import { usePlayerStore } from "../store/playerStore";
-import { Card } from "./Card";
-import { PlayerCard } from "./PlayerCard";
+import { usePlayerStore } from '../store/playerStore'
+import { Card } from './Card'
+import { PlayerCard } from './PlayerCard'
 
 export function PlayerSetup() {
-  const { state, addPlayer, deletePlayer, updatePlayer, updateDM } =
-    usePlayerStore();
+  const { state, addPlayer, deletePlayer, updatePlayer, updateDM } = usePlayerStore()
 
   return (
     <div className="player-setup">
@@ -33,5 +32,5 @@ export function PlayerSetup() {
         <h2 className="player-setup__add-label">Add player</h2>
       </Card>
     </div>
-  );
+  )
 }

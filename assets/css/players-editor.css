@@ -8,18 +8,17 @@
   width: 100vw;
   background-color: rgba(0, 0, 0, 0.4);
   display: none;
-  color: yellow
+  color: yellow;
 }
 
 .players-editor__active {
-    display: flex;
+  display: flex;
 }
-
 
 .players-editor__list {
   margin-bottom: 16px;
   display: flex;
-  flex-wrap: wrap
+  flex-wrap: wrap;
 }
 
 .players-editor__add {

@@ -1,14 +1,15 @@
-import * as THREE from "three";
-import { Actor } from "./actor.js";
-import * as CANNON from "cannon";
+import * as CANNON from 'cannon'
+import * as THREE from 'three'
+
+import { Actor } from './actor.js'
 
 export class Wall extends Actor {
   constructor(controller, name, order, position, scale) {
-    super(controller, name, order);
-    this.position = position;
-    this.scale = scale;
-    this._init();
-    this.register();
+    super(controller, name, order)
+    this.position = position
+    this.scale = scale
+    this._init()
+    this.register()
   }
 
   async _init() {
@@ -57,7 +58,6 @@ export class Wall extends Actor {
   //           displacementMap: heightMap,
   //           displacementScale: 0.05 ,
 
-
   //           // aoMapIntensity: 2,
   //         });
   //       } else {
@@ -81,78 +81,78 @@ export class Wall extends Actor {
   //   this.controller.scene.add(model.scene);
   // }
 
-  async createGround(){
-    const groundBox = new THREE.BoxGeometry(100,.1, 100);
-    const groundMaterial = await this.createGroundMaterial();
-    const groundMesh = new THREE.Mesh(groundBox, groundMaterial);
-    groundMesh.position.set(0, -0.05, 0);
-    groundMesh.receiveShadow = true;
-    groundMesh.castShadow = true;
-    groundMesh.name = "ground";
-    this.controller.scene.add(groundMesh);
+  async createGround() {
+    const groundBox = new THREE.BoxGeometry(100, 0.1, 100)
+    const groundMaterial = await this.createGroundMaterial()
+    const groundMesh = new THREE.Mesh(groundBox, groundMaterial)
+    groundMesh.position.set(0, -0.05, 0)
+    groundMesh.receiveShadow = true
+    groundMesh.castShadow = true
+    groundMesh.name = 'ground'
+    this.controller.scene.add(groundMesh)
     console.log(groundMesh)
   }
 
-  async createGroundMaterial(){
+  async createGroundMaterial() {
     const rockTexture = await this.controller.loadTexture(
-      "assets/models/textures/cliff_rocks_02_1k/basecolor.png"
-    );
+      'assets/models/textures/cliff_rocks_02_1k/basecolor.png',
+    )
     const normalMap = await this.controller.loadTexture(
-     "assets/models/textures/cliff_rocks_02_1k/normal.png"
-    );
+      'assets/models/textures/cliff_rocks_02_1k/normal.png',
+    )
     const aoMap = await this.controller.loadTexture(
-     "assets/models/textures/cliff_rocks_02_1k/ao2.png"
-    );
+      'assets/models/textures/cliff_rocks_02_1k/ao2.png',
+    )
 
     const heightMap = await this.controller.loadTexture(
-      "assets/models/textures/cliff_rocks_02_1k/height.png"
-    );
+      'assets/models/textures/cliff_rocks_02_1k/height.png',
+    )
 
     for (const tex of [rockTexture, normalMap, aoMap]) {
-      tex.wrapS = THREE.RepeatWrapping;
-      tex.wrapT = THREE.RepeatWrapping;
-      tex.repeat.set(12, 12);
+      tex.wrapS = THREE.RepeatWrapping
+      tex.wrapT = THREE.RepeatWrapping
+      tex.repeat.set(12, 12)
     }
     return new THREE.MeshPhysicalMaterial({
       map: rockTexture,
       normalMap: normalMap,
       aoMap: aoMap,
       displacementMap: heightMap,
-      displacementScale: 0.05 ,
-    });
+      displacementScale: 0.05,
+    })
   }
 
-  async createAltarMaterial(){
+  async createAltarMaterial() {
     const rockTexture = await this.controller.loadTexture(
-      "assets/models/textures/ground_stones_02_1k/basecolor.png"
-    );
+      'assets/models/textures/ground_stones_02_1k/basecolor.png',
+    )
     const normalMap = await this.controller.loadTexture(
-     "assets/models/textures/ground_stones_02_1k/normal.png"
-    );
+      'assets/models/textures/ground_stones_02_1k/normal.png',
+    )
     const aoMap = await this.controller.loadTexture(
-     "assets/models/textures/ground_stones_02_1k/ao2.png"
-    );
+      'assets/models/textures/ground_stones_02_1k/ao2.png',
+    )
 
     for (const tex of [rockTexture, normalMap, aoMap]) {
-      tex.wrapS = THREE.RepeatWrapping;
-      tex.wrapT = THREE.RepeatWrapping;
-      tex.repeat.set(1, 1);
+      tex.wrapS = THREE.RepeatWrapping
+      tex.wrapT = THREE.RepeatWrapping
+      tex.repeat.set(1, 1)
     }
     return new THREE.MeshPhysicalMaterial({
       map: rockTexture,
       normalMap: normalMap,
       aoMap: aoMap,
-      displacementScale: 0.05 ,
-    });
+      displacementScale: 0.05,
+    })
   }
 
-  async createAltar(){
-    const platformGlb = await this.controller.loadModel("assets/models/platform.glb");
-    platformGlb.scene.position.set(0,1.5,0);
-    platformGlb.scene.name = "altarPlatform";
-    platformGlb.scene.rotateY(90 * (Math.PI / 180));
-    platformGlb.scene.scale.set(3, 3, 3);
-    this.controller.scene.add(platformGlb.scene);
+  async createAltar() {
+    const platformGlb = await this.controller.loadModel('assets/models/platform.glb')
+    platformGlb.scene.position.set(0, 1.5, 0)
+    platformGlb.scene.name = 'altarPlatform'
+    platformGlb.scene.rotateY(90 * (Math.PI / 180))
+    platformGlb.scene.scale.set(3, 3, 3)
+    this.controller.scene.add(platformGlb.scene)
     // const altarCylinder = new THREE.CylinderGeometry(5, 7, 1, 32);
     // const altarMaterial = await  this.createAltarMaterial();
     // const altarMesh = new THREE.Mesh(altarCylinder, altarMaterial);

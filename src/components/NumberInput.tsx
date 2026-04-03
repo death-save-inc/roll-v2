@@ -1,22 +1,16 @@
 interface NumberInputProps {
-  name: string;
-  id: string;
-  value: number;
-  onChange: (value: number) => void;
-  small?: boolean;
+  name: string
+  id: string
+  value: number
+  onChange: (value: number) => void
+  small?: boolean
 }
 
-export function NumberInput({
-  name,
-  id,
-  value,
-  onChange,
-  small = false,
-}: NumberInputProps) {
-  const displayValue = value > 0 ? `+${value}` : `${value}`;
+export function NumberInput({ name, id, value, onChange, small = false }: NumberInputProps) {
+  const displayValue = value > 0 ? `+${value}` : `${value}`
 
   return (
-    <div className={`number-input${small ? " number-input--small" : ""}`}>
+    <div className={`number-input${small ? ' number-input--small' : ''}`}>
       <label className="number-input__label" htmlFor={`${name}-${id}`}>
         {name}
       </label>
@@ -42,5 +36,5 @@ export function NumberInput({
         </button>
       </div>
     </div>
-  );
+  )
 }

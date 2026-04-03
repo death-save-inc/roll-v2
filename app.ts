@@ -6,6 +6,7 @@ import '/assets/css/ui.css'
 
 // Expose the EventBus singleton on window so the React layer (src/eventbus.ts)
 // can share the same instance without Vite bundling a second copy.
+
 ;(window as any).__rfi_eventbus = EventBus
 
 export const app = async () => {

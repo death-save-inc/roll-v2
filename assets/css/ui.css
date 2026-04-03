@@ -7,19 +7,19 @@
    -------------------------------------------------------------------------- */
 @font-face {
   font-family: jacquard12;
-  src: url("../fonts/Jacquard12-Regular.ttf") format("truetype");
+  src: url('../fonts/Jacquard12-Regular.ttf') format('truetype');
   font-display: swap;
 }
 
 @font-face {
   font-family: runescape;
-  src: url("../fonts/RuneScape-Chat-07.woff") format("woff");
+  src: url('../fonts/RuneScape-Chat-07.woff') format('woff');
   font-display: swap;
 }
 
 @font-face {
   font-family: lithops;
-  src: url("../fonts/Lithops-Regular.woff") format("woff");
+  src: url('../fonts/Lithops-Regular.woff') format('woff');
   font-display: swap;
 }
 
@@ -52,9 +52,9 @@ body {
   --rfi-black: #1a1b20;
   --rfi-yellow: #fff000;
   --rfi-gray: #595959;
-  --rfi-font-serif: "jacquard12", serif;
-  --rfi-font-display: "jacquard12", serif;
-  --rfi-font-body: "runescape", sans-serif;
+  --rfi-font-serif: 'jacquard12', serif;
+  --rfi-font-display: 'jacquard12', serif;
+  --rfi-font-body: 'runescape', sans-serif;
 }
 
 /* --------------------------------------------------------------------------

@@ -1,21 +1,17 @@
-import { usePlayerStore } from "../store/playerStore";
-import { NumberInput } from "./NumberInput";
-import { emit } from "../eventbus";
+import { emit } from '../eventbus'
+import { usePlayerStore } from '../store/playerStore'
+import { NumberInput } from './NumberInput'
 
 export function Navigation() {
-  const { state, openModal, closeModal, updateDM } = usePlayerStore();
-  const { modalOpen, hasRolled } = state;
+  const { state, openModal, closeModal, updateDM } = usePlayerStore()
+  const { modalOpen, hasRolled } = state
 
   const handleRoll = () => {
-    closeModal();
-    emit("spell:cast");
-  };
+    closeModal()
+    emit('spell:cast')
+  }
 
-  const rollLabel = modalOpen
-    ? "Roll for initiative"
-    : hasRolled
-      ? "Reroll"
-      : "Roll for initiative";
+  const rollLabel = modalOpen ? 'Roll for initiative' : hasRolled ? 'Reroll' : 'Roll for initiative'
 
   return (
     <nav className="nav">
@@ -37,5 +33,5 @@ export function Navigation() {
         small
       />
     </nav>
-  );
+  )
 }
