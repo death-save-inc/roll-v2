@@ -2,8 +2,6 @@ import { Controller } from './modules/controller.js'
 import { Config } from './modules/lib/config.js'
 import { EventBus } from './modules/lib/eventbus.js'
 import { LocalStorageManager } from './modules/lib/manage-local-storage.js'
-import '/assets/css/ui.css'
-
 // Expose the EventBus singleton on window so the React layer (src/eventbus.ts)
 // can share the same instance without Vite bundling a second copy.
 
