@@ -93,7 +93,10 @@ export function useEventBridge({ state, setResults }: Options): void {
       const results: Player[] = threeJsPlayers
         .map((tp) => {
           const match = allReact.find((p) => p.id === tp.uuid)
-          return match ? { ...match, roll: tp.roll ?? 0, reroll: tp.reroll ?? null } : null
+          if (!match) return null
+          const result: Player = { ...match, roll: tp.roll ?? 0 }
+          if (tp.reroll != null) result.reroll = tp.reroll
+          return result
         })
         .filter((p): p is Player => p !== null)
 
