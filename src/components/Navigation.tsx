@@ -26,8 +26,6 @@ export function Navigation() {
       </button>
 
       <NumberInput
-        name="DM modifier"
-        id={state.dungeonMaster.id}
         value={state.dungeonMaster.modifier}
         onChange={(v) => updateDM({ modifier: v })}
         small
