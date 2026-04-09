@@ -6,40 +6,6 @@ interface FileInputProps {
   onChange: (base64: string) => void
 }
 
-function resizeImage(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const img = new Image()
-      img.onload = () => {
-        const MAX = 480
-        let { width, height } = img
-        if (width > height) {
-          if (width > MAX) {
-            height = Math.round(height * (MAX / width))
-            width = MAX
-          }
-        } else {
-          if (height > MAX) {
-            width = Math.round(width * (MAX / height))
-            height = MAX
-          }
-        }
-        const canvas = document.createElement('canvas')
-        canvas.width = width
-        canvas.height = height
-        const ctx = canvas.getContext('2d')!
-        ctx.drawImage(img, 0, 0, width, height)
-        resolve(canvas.toDataURL('image/jpeg', 0.85))
-      }
-      img.onerror = reject
-      img.src = e.target!.result as string
-    }
-    reader.onerror = reject
-    reader.readAsDataURL(file)
-  })
-}
-
 export function FileInput({ id, value, onChange }: FileInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -82,4 +48,38 @@ export function FileInput({ id, value, onChange }: FileInputProps) {
       )}
     </div>
   )
+}
+
+const resizeImage = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = new Image()
+      img.onload = () => {
+        const MAX = 480
+        let { width, height } = img
+        if (width > height) {
+          if (width > MAX) {
+            height = Math.round(height * (MAX / width))
+            width = MAX
+          }
+        } else {
+          if (height > MAX) {
+            width = Math.round(width * (MAX / height))
+            height = MAX
+          }
+        }
+        const canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')!
+        ctx.drawImage(img, 0, 0, width, height)
+        resolve(canvas.toDataURL('image/jpeg', 0.85))
+      }
+      img.onerror = reject
+      img.src = e.target!.result as string
+    }
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
 }

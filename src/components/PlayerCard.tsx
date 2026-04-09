@@ -75,7 +75,7 @@ export function PlayerCard({ player, canDelete, onUpdate, onDelete }: PlayerCard
             onChange={handleName}
             placeholder="Character name"
           />
-          <NumberInput name="modifier" id={player.id} value={modifier} onChange={handleModifier} />
+          <NumberInput value={modifier} onChange={handleModifier} />
           <FileInput id={player.id} value={imgUrl} onChange={handleImage} />
         </div>
       </div>
