@@ -163,7 +163,7 @@ export class MagicCircleBase {
     const outer = [];
     for (let i = 0; i <= segs; i++) {
       const a = (i / segs) * Math.PI * 2;
-      outer.push(R * Math.cos(a), 0, R * Math.sin(a));
+      outer.push(R * Math.cos(a), 3, R * Math.sin(a));
     }
     parent.add(this.makeLine(outer, this.circleBloomMat));
     parent.add(this.makeLine(outer, this.circleMat));

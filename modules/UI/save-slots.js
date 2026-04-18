@@ -215,6 +215,7 @@ export class SaveSlotsUI {
                         await storageManager.setCurrentSlot(slotName);
                         EventBus.emit('saveSlot:currentChanged', { slotName });
                         this.renderSaveSlotsFromLocalStorage();
+                        window.location.reload();
                     } catch (err) {
                         console.error('Failed to set current slot', err);
                     }

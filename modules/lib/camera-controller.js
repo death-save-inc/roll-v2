@@ -17,7 +17,7 @@ export class CameraController {
     this.controls.update();
 
     // default view
-    this.camera.position.set(-1, 7, -12);
+    this.camera.position.set(-1, 7, -16);
     this.controls.target.set(0, 6, 0);
 
     // target we’re lerping toward
@@ -34,7 +34,7 @@ export class CameraController {
     // events
     EventBus.on("spell:cast", () => {
       this.setRollView();
-      this.shake(0.4, 1.5); // half‑unit shake for 0.5s
+      this.shake(0.1, 0.8); // half‑unit shake for 0.5s
     });
     EventBus.on("roll:complete", () => {
       this.setCardView();
@@ -45,17 +45,17 @@ export class CameraController {
   }
 
   setRollView() {
-    this.setTargetPosition(
-      new THREE.Vector3(-3, 15, -18),
-      new THREE.Vector3(0, 6, 0)
-    );
+    // this.setTargetPosition(
+    //   // new THREE.Vector3(-3, 15, -18),
+    //   // new THREE.Vector3(0, 6, 0)
+    // );
   }
 
   setCardView() {
-    this.setTargetPosition(
-      new THREE.Vector3(-1, 12, -15),
-      new THREE.Vector3(0, 10, 0)
-    );
+    // this.setTargetPosition(
+    //   // new THREE.Vector3(-1, 12, -15),
+    //   // new THREE.Vector3(0, 10, 0)
+    // );
   }
 
   setTargetPosition(position, target) {

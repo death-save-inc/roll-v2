@@ -51,10 +51,11 @@ export class FireEffect {
 
     this.controller.scene.add(this.particleFireMesh);
 
-    this.light = new THREE.PointLight(0xffbb00, this.intensity, 0, 1.75);
+
+    this.light = new THREE.PointLight(0xff7a33, this.intensity, 0, 1.25);
     this.light.position.set(
       this.position.x,
-      this.position.y + 1,
+      this.position.y + 2,
       this.position.z
     );
 

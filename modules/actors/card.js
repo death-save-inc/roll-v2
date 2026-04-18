@@ -12,7 +12,7 @@ export class Card extends Actor {
     this.position = new THREE.Vector3(0, -2, 0);
     this.desiredPosition = null;
     this.desiredRotation = null;
-    this.scale = new THREE.Vector3(0.75, 0.75, 0.75);
+    this.scale = new THREE.Vector3(1.5, 1.5, 1.5);
     this.imageSrc = imageSrc;
     this.name = name;
     this.uuid = uuid;
@@ -312,7 +312,12 @@ export class Card extends Actor {
       backMaterial,
       frontMaterial,
     ];
-    const height = 4;
+
+    materials.forEach((mat) => {
+      mat.reflectivity = 0;
+      mat.emissiveIntensity = 0.0;
+    });
+    const height = 5;
     const ratio = 2 / 3;
     const geometry = new THREE.BoxGeometry(height * ratio, height, 0.02);
     this.mesh = new THREE.Mesh(geometry, materials);

@@ -147,12 +147,41 @@ export class Wall extends Actor {
   }
 
   async createAltar(){
-    const platformGlb = await this.controller.loadModel("assets/models/platform.glb");
+    let result = await this.controller.loadModel("assets/models/platform.glb");
+    const platformGlb = result.gltf;
     platformGlb.scene.position.set(0,1.5,0);
     platformGlb.scene.name = "altarPlatform";
     platformGlb.scene.rotateY(90 * (Math.PI / 180));
     platformGlb.scene.scale.set(3, 3, 3);
     this.controller.scene.add(platformGlb.scene);
+
+
+    // //create temp ground under altar stretching far
+    // const altarGround = new THREE.PlaneGeometry(500, 500);
+    // const altarGroundMaterial = await this.createAltarMaterial(); 
+    // const altarGroundMesh = new THREE.Mesh(altarGround, altarGroundMaterial);
+
+    // //repeat texture on altar ground often to avoid stretching
+    // altarGroundMesh.material.map.repeat.set(1, 1);
+
+    // altarGroundMesh.material.map.wrapS = THREE.RepeatWrapping;
+    // altarGroundMesh.material.map.wrapT = THREE.RepeatWrapping;
+    // altarGroundMesh.position.set(0, 0, 0);
+    // altarGroundMesh.rotation.x = -Math.PI / 2;
+    // altarGroundMesh.receiveShadow = true;
+    // this.controller.scene.add(altarGroundMesh);
+
+       result = await this.controller.loadModel("assets/models/walls.glb");
+      const wall = result.gltf;
+
+      // convertWallToPhysicalMaterial(wall.scene);
+
+      wall.scene.position.set(0, 10, 50);
+      wall.scene.rotation.y = Math.PI / 2;
+      wall.scene.scale.set(5, 5, 5);
+
+      this.controller.scene.add(wall.scene);
+
     // const altarCylinder = new THREE.CylinderGeometry(5, 7, 1, 32);
     // const altarMaterial = await  this.createAltarMaterial();
     // const altarMesh = new THREE.Mesh(altarCylinder, altarMaterial);
@@ -161,7 +190,72 @@ export class Wall extends Actor {
     // altarMesh.castShadow = true;
     // altarMesh.name = "altar";
     // this.controller.scene.add(altarMesh);
+
   }
 
   update() {}
+}
+function convertWallToPhysicalMaterial(root) {
+  root.traverse((child) => {
+    if (!child.isMesh || !child.material) return;
+
+    const oldMaterials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+
+    const newMaterials = oldMaterials.map((oldMat) => {
+      const physicalMat = new THREE.MeshBasicMaterial({
+        map: oldMat.map || null,
+        normalMap: oldMat.normalMap || null,
+        roughnessMap: oldMat.roughnessMap || null,
+        metalnessMap: oldMat.metalnessMap || null,
+        aoMap: oldMat.aoMap || null,
+        emissiveMap: oldMat.emissiveMap || null,
+        alphaMap: oldMat.alphaMap || null,
+
+        color: oldMat.color ? oldMat.color.clone() : new THREE.Color(0xffffff),
+        emissive: oldMat.emissive
+          ? oldMat.emissive.clone()
+          : new THREE.Color(0x000000),
+
+        roughness:
+          oldMat.roughness !== undefined ? oldMat.roughness : 0.9,
+        metalness:
+          oldMat.metalness !== undefined ? oldMat.metalness : 0.0,
+
+        transparent: oldMat.transparent ?? false,
+        opacity: oldMat.opacity ?? 1,
+        side: oldMat.side ?? THREE.FrontSide,
+      });
+
+      // good defaults for stone walls
+      physicalMat.metalness = 0.0;
+      physicalMat.roughness =
+        oldMat.roughness !== undefined ? oldMat.roughness : 0.95;
+
+      // optional physical-only properties
+      physicalMat.clearcoat = 0.0;
+      physicalMat.clearcoatRoughness = 1.0;
+      physicalMat.transmission = 0.0;
+      physicalMat.ior = 1.5;
+
+      // make sure color textures are treated correctly
+      if (physicalMat.map) {
+        physicalMat.map.colorSpace = THREE.SRGBColorSpace;
+      }
+      if (physicalMat.emissiveMap) {
+        physicalMat.emissiveMap.colorSpace = THREE.SRGBColorSpace;
+      }
+
+      physicalMat.needsUpdate = true;
+      return physicalMat;
+    });
+
+    child.material = Array.isArray(child.material)
+      ? newMaterials
+      : newMaterials[0];
+
+    child.castShadow = true;
+    child.receiveShadow = true;
+  });
 }

@@ -25,7 +25,8 @@ export class CardManager {
             await this.cards[i].updateCardImage(i + 1);
           }
         }
-        this.setPolygonShape();
+        // this.setPolygonShape();
+        this.setFanShape();
       }, 1000);
     });
   }
@@ -180,18 +181,18 @@ generatePolygon(sides, radius, centerX, centerY) {
     // Create a set of boxes (cards)
     const cardCount = this.cards.length; // Number of cards
     const fanAngle = Math.PI / 3; // 60-degree spread
-    const cardWidth = 2; // Width of each card
+    const cardWidth = 3; // Width of each card
     const radius = (cardCount * cardWidth) / fanAngle; // Adjust radius dynamically
-
+    const cards = this.cards.reverse()
     for (let i = 0; i < cardCount; i++) {
       // Compute angle for this card
       const angle = -fanAngle / 2 + (i / (cardCount - 1)) * fanAngle;
 
       // Position the card along a **horizontal arc** (X-axis spread, Y-axis curve)
       const x = Math.sin(angle) * radius; // Spread out left to right (X)
-      const y = Math.cos(angle) * (radius / 4); // Slight curve upward (Y), smaller radius to keep low
-      this.cards[i].desiredPosition = new THREE.Vector3(x, y + 2, -0.5 * i);
-      this.cards[i].desiredRotation = new THREE.Quaternion().setFromEuler(
+      const y = Math.cos(angle) * (radius / 4) + 6;  // Slight curve upward (Y), smaller radius to keep low
+      cards[i].desiredPosition = new THREE.Vector3(x, y + 2, -0.5 * i);
+      cards[i].desiredRotation = new THREE.Quaternion().setFromEuler(
         new THREE.Euler(0, 0, -angle)
       );
     }

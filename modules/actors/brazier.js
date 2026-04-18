@@ -12,8 +12,9 @@ export class Brazier extends Actor {
   }
 
   async _init() {
-    const model = await this.controller.loadModel("assets/models/brazier2.glb");
-
+    const result = await this.controller.loadModel("assets/models/brazier2.glb");
+    console.log(result);
+    const model = result.gltf
     // model.scene.children[0].material = new THREE.MeshPhongMaterial({
     //   color: new THREE.Color().setRGB(180 / 255, 180 / 255, 180 / 255),
     // });

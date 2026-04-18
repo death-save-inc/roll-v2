@@ -20,6 +20,8 @@ import { CameraController } from "./lib/camera-controller.js";
 import { DieManager } from "./managers/die-manager.js";
 import { DungeonManager } from "./managers/dungeon-manager.js";
 import { SpellVfxPipeline } from "./managers/spell-vfx-pipeline.js";
+import { TreeBillboard } from "./actors/tree.js";
+import { Skeleton } from "./actors/skeleton.js";
 
 export class Controller {
   constructor() {
@@ -75,23 +77,16 @@ export class Controller {
     this.interactions = [];
     this.selectedObjects = [];
     this.scene = new THREE.Scene();
-    this.renderer = new THREE.WebGLRenderer();
+    this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-
-    this.renderer.shadowMap.enabled = true;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1
     // set background color
-    // this.renderer.setClearColor(0x111215, 1.0);
 
-    // right after you create your scene:
-    this.scene.fog = new THREE.FogExp2(0x000000, 0.01);
-    this.renderer.setClearColor(this.scene.fog.color);
 
     this.cameraController = new CameraController(
       this,
@@ -147,29 +142,38 @@ export class Controller {
       }
       this.delta = this.delta % this.interval;
     }
+    this.modelLoader.update(this.delta);
     this.cameraController.update();
   }
   _addLights() {
-    const light = new THREE.AmbientLight(0xffffff);
-    light.intensity = 3;
 
-    const dl = new THREE.DirectionalLight(0xffffff, 2);
-    dl.position.set(0, 1, 0); //default; light shining from top
-    dl.castShadow = true; // default false
+    const hemi = new THREE.HemisphereLight(0x8899aa, 0x332211, 15);
+    this.scene.add(hemi);
 
-    this.scene.add(light);
-    this.scene.add(dl);
+    const moon = new THREE.DirectionalLight(0xaabbff, 2);
+    moon.position.set(8, 20,10);
+    moon.target.position.set(0, 4, 2);
+    this.scene.add(moon.target);
+    this.scene.add(moon);
+
+    //light for background castle walls
+    const moon2 = new THREE.DirectionalLight(0xaabbff, 0.5);
+    moon2.position.set(-8, 20, -10);
+    moon2.target.position.set(0, 4, 2);
+    this.scene.add(moon2.target);
+    this.scene.add(moon2);
+
   }
 
   _addEffects() {
     const loader = new THREE.CubeTextureLoader();
     const skyboxTexture = loader.load([
-      "assets/models/textures/skybox/px.png", // right
-      "assets/models/textures/skybox/nx.png", // left
-      "assets/models/textures/skybox/py.png", // top
-      "assets/models/textures/skybox/ny.png", // bottom
-      "assets/models/textures/skybox/pz.png", // front
-      "assets/models/textures/skybox/nz.png", // back
+      "assets/models/textures/skybox/bw_px.png", // right
+      "assets/models/textures/skybox/bw_nx.png", // left
+      "assets/models/textures/skybox/bw_py.png", // top
+      "assets/models/textures/skybox/bw_ny.png", // bottom
+      "assets/models/textures/skybox/bw_pz.png", // front
+      "assets/models/textures/skybox/bw_nz.png", // back
     ]);
 
     // Set it as the scene background
@@ -205,6 +209,27 @@ export class Controller {
       new THREE.Vector3(0, 0, 8),
       new THREE.Vector3(3, 3, 3)
     );
+
+    // random trees minimum distance from camera
+    for (let i = 0; i < 100; i++) {
+      const x = Math.random() * 1000 - 500;
+      const z = Math.random() * 100 + 50;
+
+      // keep aspect ratio of tree consistent by using same random value for x and z scale
+      const randomScale = 10 + Math.random() * 100;
+      const scaleX = randomScale;
+      const scaleY = randomScale;
+      const scaleZ = randomScale;
+      new TreeBillboard(
+        this,
+        `tree${i}`,
+        1,
+        new THREE.Vector3(x, 50 * Math.random(), 20 + z),
+        new THREE.Vector3(scaleX, scaleY, scaleZ)
+      );
+    }
+
+    // const skeleton = new Skeleton(this, "skeleton", 1, new THREE.Vector3(0, 4, 0), new THREE.Vector3(4,4, 4));
   }
 
   _addPostProcessing() {
@@ -215,7 +240,12 @@ export class Controller {
     const DitherPassInit = DitherPassGen({ THREE, Pass, FullScreenQuad });
     const ditherPass = new DitherPassInit({
       resolution: new THREE.Vector2(window.innerWidth, window.innerHeight),
-      bias: 0.025,
+      bias: 0.0005,
+      excludedColor: new THREE.Vector3(1, 0, 0), // Exclude pure yellow from dithering
+      tolerance: 0.1, // Adjust as needed to control how closely colors must match to be excluded
+      pixelSize: 2.5, // Bigger = chunkier dither blocks
+      scanlineStrength: 0.17, // 0.0 -> off, ~0.08-0.18 nice range
+      scanlineDensity: 0.01, // 1.0 = one line per screen pixel row
     });
 
     this.outlinePass = new OutlinePass(
@@ -230,7 +260,7 @@ export class Controller {
       0.4, // radius
       0.0 // threshold — important!
     );
-    bloomPass.threshold = 0.25; // catch everything
+    bloomPass.threshold = 0.5; // catch everything
     bloomPass.strength = 1; // stronger bloom
     bloomPass.radius = 1;
 

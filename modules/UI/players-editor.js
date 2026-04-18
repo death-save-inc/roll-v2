@@ -1,6 +1,7 @@
 import {LoadTemplate} from "../lib/template.js";
 import {EventBus} from "../lib/eventbus.js";
 import {LocalStorageManager} from "../lib/manage-local-storage.js";
+import {compress} from "../lib/compress.js";
 
 export class PlayersEditor {
     constructor() {
@@ -14,6 +15,7 @@ export class PlayersEditor {
     async init() {
         this.template = await LoadTemplate("players-editor.html");
         this.playerItem = await LoadTemplate("player-item.html");
+        this.playerEditor = await LoadTemplate("player-editor-item.html");
         this.createElement();
         this.findElements();
         this.bindEvents();
@@ -53,8 +55,34 @@ export class PlayersEditor {
         playerEl.classList.add("player-item");
         playerEl.innerHTML = this.playerItem;
         // Here you can set player data to the playerEl if needed
-        playerEl.querySelector(".player-item__name").innerHTML = player.name || "New Player";
-        playerEl.querySelector(".player-item__image").innerHTML = `<img src="${player.imageSrc || 'default-image.png'}" alt="${player.name}">`;
+        // playerEl.querySelector(".player-item__name").innerHTML/ = player.name || "New Player";
+        // playerEl.querySelector(".player-item__image").innerHTML = `<img src="${player.imageSrc || 'default-image.png'}" alt="${player.name}">`;
+
+        const nameInput = document.createElement("input");
+        nameInput.type = "text";
+        nameInput.classList.add("player-name");
+        nameInput.placeholder = "Enter player name";
+        playerEl.appendChild(nameInput);    
+        nameInput.value = player.name || "";
+
+        const imageFileInput = document.createElement("input");
+        imageFileInput.type = "file";
+        imageFileInput.accept = "image/*";
+        imageFileInput.classList.add("player-image");
+        playerEl.appendChild(imageFileInput);
+        imageFileInput.addEventListener("change", async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const url = await compress(e.target.files[0], 140);
+            }
+        });
+
+
+
+        // const imageInput = playerEl.querySelector(".player-image");
+        // imageInput.value = player.imageSrc || "";
+
+
         return playerEl;
     }
 
@@ -63,7 +91,6 @@ export class PlayersEditor {
         const saveData = storageManager.getCurrentSave();
         const players = await saveData.get("players");    
 
-        console.log("playereditor:renderPlayersFromLocalStorage", players);
         this.playersListEl.innerHTML = ""; // Clear existing players
         if (players.length > 0) {
             for (const player of players) {

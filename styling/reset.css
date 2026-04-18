@@ -110,6 +110,9 @@ body, html {
   font-family: jacquard12, sans-serif;
   background: #000000;
 }
+* {
+      cursor: url('/assets/cursor_outline_yellow.png'), auto;
+}
 ol,
 ul {
   list-style: none;

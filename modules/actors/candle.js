@@ -99,7 +99,7 @@ export class Candle extends Actor {
     this.flame.scale.set(0.5 * s, 1.0 * s, 1);
 
     // flicker light
-    this.pointLight.intensity = 8  +  Math.sin(t * 2 + 1 * Math.random()) * 2;
+    this.pointLight.intensity = 4  +  Math.sin(t * 2 + 1 * Math.random()) * 2;
 
     // flicker glow
     this.glow.scale.set(6 * s, 6 * s, 1);
