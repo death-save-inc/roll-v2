@@ -2,9 +2,16 @@
   "semi": false,
   "singleQuote": true,
   "arrowParens": "always",
-  "importOrder": ["^@/(.*)$", "^[./]"],
+  "importOrder": [
+    "^@/(.*)$",
+    "^[./]"
+  ],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true,
   "printWidth": 100,
-  "plugins": ["@trivago/prettier-plugin-sort-imports"]
+  "plugins": [
+    "@trivago/prettier-plugin-sort-imports",
+    "prettier-plugin-tailwindcss"
+  ],
+  "tailwindStylesheet": "./src/stylesheets/main.css"
 }

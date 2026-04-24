@@ -23,7 +23,7 @@ export function Modal({ title, children }: ModalProps) {
     <dialog className="modal" ref={dialogRef} open>
       <div className="modal__wrapper">
         <div className="container">
-          <h1 className="modal__title display-2">{title}</h1>
+          <h1 className="modal__title font-charted">{title}</h1>
           <div className="modal__content">{children}</div>
         </div>
       </div>

@@ -11,9 +11,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.2.4",
     "cannon": "^0.6.2",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "tailwindcss": "^4.2.4",
     "three": "^0.183.2",
     "three-addons": "^1.2.0",
     "threejs-meshline": "^2.0.12"
@@ -30,7 +32,8 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
-    "prettier": "^3.8.1",
+    "prettier": "^3.8.3",
+    "prettier-plugin-tailwindcss": "^0.0.0-insiders.f7d2598",
     "sass": "^1.99.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.58.0",
