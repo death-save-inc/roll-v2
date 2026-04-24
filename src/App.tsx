@@ -1,4 +1,5 @@
 import { StrictMode, useCallback } from 'react'
+import { createRoot } from 'react-dom/client'
 
 import { Modal } from './components/Modal'
 import { Navigation } from './components/Navigation'
@@ -7,6 +8,7 @@ import { emit } from './eventbus'
 import { useEventBridge } from './hooks/useEventBridge'
 import { useKeyBindings } from './hooks/useKeyBindings'
 import { useLocalStorage } from './hooks/useLocalStorage'
+import './scss/main.scss'
 import { PlayerProvider, usePlayerStore } from './store/playerStore'
 
 function AppContent() {
@@ -45,3 +47,5 @@ export function App() {
     </StrictMode>
   )
 }
+
+createRoot(document.getElementById('root')!).render(<App />)
