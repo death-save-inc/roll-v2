@@ -1,12 +1,11 @@
 .file-input {
-  display: flex;
   width: 100%;
 }
 
-.file-input__field {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
+.file-input__input {
+  display: none;
+}
+
+.file-input__label {
+  width: 100%;
 }

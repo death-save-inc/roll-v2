@@ -1,28 +1,29 @@
 import { type ReactNode, useEffect, useRef } from 'react'
 
+import { usePlayerStore } from '../store/playerStore'
+
 interface ModalProps {
   title: string
-  open: boolean
   children: ReactNode
 }
 
-export function Modal({ title, open, children }: ModalProps) {
+export function Modal({ title, children }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
+  const { state } = usePlayerStore()
 
   useEffect(() => {
-    if (open) {
+    if (state.modalOpen) {
       dialogRef.current?.focus()
     }
-  }, [open])
+  }, [state.modalOpen])
 
-  if (!open) return null
+  if (!state.modalOpen) return null
 
   return (
     <dialog className="modal" ref={dialogRef} open>
       <div className="modal__wrapper">
         <div className="container">
           <h1 className="modal__title display-2">{title}</h1>
-
           <div className="modal__content">{children}</div>
         </div>
       </div>

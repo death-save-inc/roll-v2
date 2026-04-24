@@ -28,10 +28,10 @@ function AppContent() {
 
   return (
     <>
-      <Modal title="Heroes & Allies" open={state.modalOpen}>
+      <Navigation />
+      <Modal title="Heroes & Allies">
         <PlayerSetup />
       </Modal>
-      <Navigation />
     </>
   )
 }
