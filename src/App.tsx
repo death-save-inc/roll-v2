@@ -10,7 +10,7 @@ import { useLocalStorage } from './hooks/useLocalStorage'
 import { PlayerProvider, usePlayerStore } from './store/playerStore'
 
 function AppContent() {
-  const { state, setResults, hydrate, closeModal } = usePlayerStore()
+  const { state, setResults, hydrate, openModal, closeModal, updateDM } = usePlayerStore()
 
   // Persist & hydrate localStorage
   useLocalStorage(state, hydrate)
@@ -18,13 +18,17 @@ function AppContent() {
   // Bridge React state ↔ ThreeJS EventBus
   useEventBridge({ state, setResults })
 
-  // Keyboard shortcut: R = roll
   const handleRoll = useCallback(() => {
     closeModal()
     emit('spell:cast')
   }, [closeModal])
 
-  useKeyBindings({ onRoll: handleRoll })
+  const handleDMModifier = useCallback(
+    (delta: number) => updateDM({ modifier: state.dungeonMaster.modifier + delta }),
+    [updateDM, state.dungeonMaster.modifier],
+  )
+
+  useKeyBindings({ onRoll: handleRoll, onOpenModal: openModal, onCloseModal: closeModal, onDMModifier: handleDMModifier })
 
   return (
     <>
