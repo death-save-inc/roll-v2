@@ -1,6 +1,7 @@
 import { emit } from '../eventbus'
 import { usePlayerStore } from '../store/playerStore'
-import { NumberInput } from './NumberInput'
+import Button from './Button'
+import SmallNumberInput from './SmallNumberInput'
 
 export function Navigation() {
   const { state, openModal, closeModal, updateDM } = usePlayerStore()
@@ -14,19 +15,14 @@ export function Navigation() {
   const rollLabel = modalOpen ? 'Roll for initiative' : hasRolled ? 'Reroll' : 'Roll for initiative'
 
   return (
-    <nav className="nav">
-      {!modalOpen && (
-        <button className="text-button" type="button" onClick={openModal}>
-          Edit
-        </button>
-      )}
+    <nav className="fixed right-0 bottom-0 left-0 flex h-30 flex-nowrap items-center justify-center gap-4">
+      {!modalOpen && <Button label="Edit" handleClick={openModal} />}
 
-      <button className="text-button" type="button" onClick={handleRoll}>
-        {rollLabel}
-      </button>
+      <Button label={rollLabel} handleClick={handleRoll} />
 
-      <NumberInput
+      <SmallNumberInput
         value={state.dungeonMaster.modifier}
+        label="DM Modifier"
         onChange={(v) => updateDM({ modifier: v })}
         small
       />

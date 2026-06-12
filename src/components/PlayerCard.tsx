@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { type Player } from '../types/player'
 import { Card } from './Card'
 import { FileInput } from './FileInput'
-import { NumberInput } from './NumberInput'
+import NumberInput from './SmallNumberInput'
 import { TextInput } from './TextInput'
 
 interface PlayerCardProps {
@@ -55,7 +55,7 @@ export function PlayerCard({ player, canDelete, onUpdate, onDelete }: PlayerCard
     : undefined
 
   return (
-    <Card className={`player-card${player.type === 'dm' ? ' player-card--dm' : ''}`}>
+    <Card className={`player-card${player.type === 'dm' ? 'player-card--dm' : ''}`}>
       <div className="player-card__inner" style={cardStyle}>
         {canDelete && (
           <button
@@ -75,7 +75,7 @@ export function PlayerCard({ player, canDelete, onUpdate, onDelete }: PlayerCard
             onChange={handleName}
             placeholder="Character name"
           />
-          <NumberInput value={modifier} onChange={handleModifier} />
+          <NumberInput value={modifier} onChange={handleModifier} label="Modifier" />
           <FileInput id={player.id} value={imgUrl} onChange={handleImage} />
         </div>
       </div>
