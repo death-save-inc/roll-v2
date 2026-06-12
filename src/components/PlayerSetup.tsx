@@ -1,13 +1,12 @@
 import { usePlayerStore } from '../store/playerStore'
-import { Card } from './Card'
-import { PlayerCard } from './PlayerCard'
+import Card from './Card'
+import PlayerCard from './PlayerCard'
 
-export function PlayerSetup() {
+const PlayerSetup = () => {
   const { state, addPlayer, deletePlayer, updatePlayer, updateDM } = usePlayerStore()
 
   return (
     <div className="player-setup">
-      {/* Dungeon Master card */}
       <PlayerCard
         key={state.dungeonMaster.id}
         player={state.dungeonMaster}
@@ -16,7 +15,6 @@ export function PlayerSetup() {
         onDelete={() => {}}
       />
 
-      {/* Player cards */}
       {state.players.map((player) => (
         <PlayerCard
           key={player.id}
@@ -27,10 +25,11 @@ export function PlayerSetup() {
         />
       ))}
 
-      {/* Add player card */}
       <Card centered onClick={addPlayer}>
         <h2 className="player-setup__add-label">Add player</h2>
       </Card>
     </div>
   )
 }
+
+export default PlayerSetup

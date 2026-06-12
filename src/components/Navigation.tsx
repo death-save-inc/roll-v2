@@ -3,7 +3,7 @@ import { usePlayerStore } from '../store/playerStore'
 import Button from './Button'
 import SmallNumberInput from './SmallNumberInput'
 
-export function Navigation() {
+const Navigation = () => {
   const { state, openModal, closeModal, updateDM } = usePlayerStore()
   const { modalOpen, hasRolled } = state
 
@@ -29,3 +29,5 @@ export function Navigation() {
     </nav>
   )
 }
+
+export default Navigation

@@ -14,7 +14,7 @@ const inputClasses =
   'text-5xl text-primary text-center cursor-pointer w-8 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none pointer-events-auto'
 const buttonClasses = 'text-5xl text-primary cursor-pointer pointer-events-auto'
 
-export default ({ label, value, onChange }: SmallNumberInputProps) => {
+const SmallNumberInput = ({ label, value, onChange }: SmallNumberInputProps) => {
   const id = useId()
   const [localValue, setLocalValue] = useState(String(value))
 
@@ -75,3 +75,5 @@ export default ({ label, value, onChange }: SmallNumberInputProps) => {
     </div>
   )
 }
+
+export default SmallNumberInput

@@ -7,7 +7,7 @@ interface ModalProps {
   children: ReactNode
 }
 
-export function Modal({ title, children }: ModalProps) {
+const Modal = ({ title, children }: ModalProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const { state } = usePlayerStore()
 
@@ -30,3 +30,5 @@ export function Modal({ title, children }: ModalProps) {
     </dialog>
   )
 }
+
+export default Modal

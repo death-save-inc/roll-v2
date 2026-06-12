@@ -6,7 +6,7 @@ interface FileInputProps {
   onChange: (base64: string) => void
 }
 
-export function FileInput({ id, value, onChange }: FileInputProps) {
+const FileInput = ({ id, value, onChange }: FileInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,7 +18,6 @@ export function FileInput({ id, value, onChange }: FileInputProps) {
     } catch {
       // silently ignore image errors
     }
-    // Reset input so the same file can be re-selected
     if (inputRef.current) inputRef.current.value = ''
   }
 
@@ -49,6 +48,8 @@ export function FileInput({ id, value, onChange }: FileInputProps) {
     </div>
   )
 }
+
+export default FileInput
 
 const resizeImage = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {

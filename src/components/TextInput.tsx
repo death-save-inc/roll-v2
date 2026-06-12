@@ -6,7 +6,7 @@ interface TextInputProps {
   placeholder?: string
 }
 
-export function TextInput({ name, id, value, onChange, placeholder }: TextInputProps) {
+const TextInput = ({ name, id, value, onChange, placeholder }: TextInputProps) => {
   return (
     <div className="text-input">
       <label className="text-input__label" htmlFor={`${name}-${id}`}>
@@ -23,3 +23,5 @@ export function TextInput({ name, id, value, onChange, placeholder }: TextInputP
     </div>
   )
 }
+
+export default TextInput

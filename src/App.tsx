@@ -1,8 +1,8 @@
 import { StrictMode, useCallback } from 'react'
 
-import { Modal } from './components/Modal'
-import { Navigation } from './components/Navigation'
-import { PlayerSetup } from './components/PlayerSetup'
+import Modal from './components/Modal'
+import Navigation from './components/Navigation'
+import PlayerSetup from './components/PlayerSetup'
 import { emit } from './eventbus'
 import { useEventBridge } from './hooks/useEventBridge'
 import { useKeyBindings } from './hooks/useKeyBindings'

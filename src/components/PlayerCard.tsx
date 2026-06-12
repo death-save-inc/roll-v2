@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 
 import { type Player } from '../types/player'
-import { Card } from './Card'
-import { FileInput } from './FileInput'
-import NumberInput from './SmallNumberInput'
-import { TextInput } from './TextInput'
+import Card from './Card'
+import FileInput from './FileInput'
+import SmallNumberInput from './SmallNumberInput'
+import TextInput from './TextInput'
 
 interface PlayerCardProps {
   player: Player
@@ -13,12 +13,11 @@ interface PlayerCardProps {
   onDelete: () => void
 }
 
-export function PlayerCard({ player, canDelete, onUpdate, onDelete }: PlayerCardProps) {
+const PlayerCard = ({ player, canDelete, onUpdate, onDelete }: PlayerCardProps) => {
   const [name, setName] = useState(player.name)
   const [modifier, setModifier] = useState(player.modifier)
   const [imgUrl, setImgUrl] = useState(player.imgUrl)
 
-  // Keep local state in sync if the player prop changes from outside
   useEffect(() => {
     setName(player.name)
   }, [player.name])
@@ -75,10 +74,12 @@ export function PlayerCard({ player, canDelete, onUpdate, onDelete }: PlayerCard
             onChange={handleName}
             placeholder="Character name"
           />
-          <NumberInput value={modifier} onChange={handleModifier} label="Modifier" />
+          <SmallNumberInput value={modifier} onChange={handleModifier} label="Modifier" />
           <FileInput id={player.id} value={imgUrl} onChange={handleImage} />
         </div>
       </div>
     </Card>
   )
 }
+
+export default PlayerCard

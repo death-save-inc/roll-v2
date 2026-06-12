@@ -10,7 +10,8 @@ const stateClasses = {
   default: 'text-primary',
   disabled: 'cursor-not-allowed pointer-events-none text-primary-disabled',
 }
-export default ({ label, state = 'default', handleClick }: ToolbarButtonProps) => {
+
+const ToolbarButton = ({ label, state = 'default', handleClick }: ToolbarButtonProps) => {
   const classes = [baseClasses, stateClasses[state]].join(' ')
 
   return (
@@ -19,3 +20,5 @@ export default ({ label, state = 'default', handleClick }: ToolbarButtonProps) =
     </button>
   )
 }
+
+export default ToolbarButton

@@ -24,16 +24,8 @@ const stateClasses = {
   disabled: 'opacity-50 cursor-not-allowed pointer-events-none',
 }
 
-export default ({
-  label,
-  size = 'large',
-  intent = 'primary',
-  state = 'default',
-  handleClick,
-}: ButtonProps) => {
-  const classes = [baseClasses, sizeClasses[size], intentClasses[intent], stateClasses[state]].join(
-    ' ',
-  )
+const Button = ({ label, size = 'large', intent = 'primary', state = 'default', handleClick }: ButtonProps) => {
+  const classes = [baseClasses, sizeClasses[size], intentClasses[intent], stateClasses[state]].join(' ')
 
   return (
     <button className={classes} onClick={handleClick} disabled={state === 'disabled'}>
@@ -41,3 +33,5 @@ export default ({
     </button>
   )
 }
+
+export default Button
