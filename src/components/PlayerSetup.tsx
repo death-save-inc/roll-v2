@@ -6,7 +6,7 @@ const PlayerSetup = () => {
   const { state, addPlayer, deletePlayer, updatePlayer, updateDM } = usePlayerStore()
 
   return (
-    <div className="player-setup">
+    <div className="grid-rows-auto grid w-full grid-cols-8 gap-3 p-6">
       <PlayerCard
         key={state.dungeonMaster.id}
         player={state.dungeonMaster}
@@ -25,8 +25,8 @@ const PlayerSetup = () => {
         />
       ))}
 
-      <Card centered onClick={addPlayer}>
-        <h2 className="player-setup__add-label">Add player</h2>
+      <Card centered onClick={addPlayer} className="cursor-pointer">
+        <h2 className="m-6 text-center text-5xl text-primary">Add player</h2>
       </Card>
     </div>
   )
