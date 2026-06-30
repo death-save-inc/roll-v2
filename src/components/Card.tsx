@@ -4,6 +4,7 @@ interface CardProps {
   children?: ReactNode
   centered?: boolean
   className?: string
+  style?: React.CSSProperties
   onClick?: () => void
 }
 
@@ -12,10 +13,11 @@ const baseClasses =
 const centeredClasses = 'justify-center items-center'
 const defaultClasses = 'justify-end items-start'
 
-const Card = ({ children, centered = false, className = '', onClick }: CardProps) => {
+const Card = ({ children, centered = false, className = '', style, onClick }: CardProps) => {
   return (
     <div
       className={`${baseClasses} ${centered ? centeredClasses : defaultClasses} ${className}`}
+      style={style}
       onClick={onClick}
     >
       {children}

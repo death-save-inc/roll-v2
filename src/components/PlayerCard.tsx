@@ -48,14 +48,14 @@ const PlayerCard = ({ player, canDelete, onUpdate, onDelete }: PlayerCardProps) 
 
   const cardStyle = imgUrl
     ? {
-        backgroundImage: `linear-gradient(to top, rgba(26,27,32,0.95) 30%, rgba(26,27,32,0.4)), url(${imgUrl})`,
+        backgroundImage: `url(${imgUrl})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }
     : undefined
 
   return (
-    <Card className={`player-card${player.type === 'dm' ? 'player-card--dm' : ''}`}>
+    <Card style={cardStyle}>
       {canDelete && (
         <Button
           size="small"
