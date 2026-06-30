@@ -1,10 +1,15 @@
 import { useRef } from 'react'
 
+import Button from './Button'
+
 interface FileInputProps {
   id: string
   value: string
   onChange: (base64: string) => void
 }
+
+const labelClasses =
+  'w-full flex items-center justify-center text-2xl px-4 pointer-events-auto cursor-pointer h-10 bg-primary text-primary-inverse'
 
 const FileInput = ({ id, value, onChange }: FileInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -27,21 +32,19 @@ const FileInput = ({ id, value, onChange }: FileInputProps) => {
   }
 
   return (
-    <div className="file-input">
+    <div className="w-full">
       <input
         ref={inputRef}
-        className="file-input__field"
+        className="hidden"
         type="file"
         id={`artwork-${id}`}
         accept="image/png, image/jpeg"
         onChange={handleChange}
       />
       {value ? (
-        <button className="button" type="button" onClick={handleRemove}>
-          Remove artwork
-        </button>
+        <Button size="small" label="Remove artwork" className="w-full" handleClick={handleRemove} />
       ) : (
-        <label className="button" htmlFor={`artwork-${id}`}>
+        <label className={labelClasses} htmlFor={`artwork-${id}`}>
           Add artwork
         </label>
       )}
