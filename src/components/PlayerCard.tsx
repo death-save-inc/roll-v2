@@ -55,7 +55,10 @@ const PlayerCard = ({ player, canDelete, onUpdate, onDelete }: PlayerCardProps) 
     : undefined
 
   return (
-    <Card style={cardStyle}>
+    <Card
+      style={cardStyle}
+      className="before:absolute before:bottom-0 before:left-0 before:z-0 before:h-1/2 before:w-full before:bg-[linear-gradient(to_top,black,transparent)] before:content-['']"
+    >
       {canDelete && (
         <Button
           size="small"
