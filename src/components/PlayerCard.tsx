@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { type Player } from '../types/player'
+import Button from './Button'
 import Card from './Card'
 import FileInput from './FileInput'
 import SmallNumberInput from './SmallNumberInput'
@@ -55,29 +56,24 @@ const PlayerCard = ({ player, canDelete, onUpdate, onDelete }: PlayerCardProps) 
 
   return (
     <Card className={`player-card${player.type === 'dm' ? 'player-card--dm' : ''}`}>
-      <div className="player-card__inner" style={cardStyle}>
-        {canDelete && (
-          <button
-            className="button button--icon player-card__delete"
-            type="button"
-            onClick={onDelete}
-            aria-label="Delete player"
-          >
-            ×
-          </button>
-        )}
-        <div className="player-card__controls">
-          <TextInput
-            name="name"
-            id={player.id}
-            value={name}
-            onChange={handleName}
-            placeholder="Character name"
-          />
-          <SmallNumberInput value={modifier} onChange={handleModifier} label="Modifier" />
-          <FileInput id={player.id} value={imgUrl} onChange={handleImage} />
-        </div>
-      </div>
+      {canDelete && (
+        <Button
+          size="small"
+          intent="primary"
+          handleClick={onDelete}
+          label="x"
+          className="mb-auto self-end"
+        />
+      )}
+      <TextInput
+        name="name"
+        id={player.id}
+        value={name}
+        onChange={handleName}
+        placeholder="Character name"
+      />
+      <SmallNumberInput value={modifier} onChange={handleModifier} label="Modifier" />
+      <FileInput id={player.id} value={imgUrl} onChange={handleImage} />
     </Card>
   )
 }
