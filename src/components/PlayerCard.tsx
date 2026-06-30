@@ -4,7 +4,7 @@ import { type Player } from '../types/player'
 import Button from './Button'
 import Card from './Card'
 import FileInput from './FileInput'
-import SmallNumberInput from './SmallNumberInput'
+import SmallNumberInput from './NumberInput'
 import TextInput from './TextInput'
 
 interface PlayerCardProps {
@@ -75,7 +75,7 @@ const PlayerCard = ({ player, canDelete, onUpdate, onDelete }: PlayerCardProps) 
         onChange={handleName}
         placeholder="Character name"
       />
-      <SmallNumberInput value={modifier} onChange={handleModifier} label="Modifier" />
+      <SmallNumberInput value={modifier} onChange={handleModifier} className="w-full" />
       <FileInput id={player.id} value={imgUrl} onChange={handleImage} />
     </Card>
   )

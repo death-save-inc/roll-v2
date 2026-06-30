@@ -1,9 +1,10 @@
 import { useEffect, useId, useState } from 'react'
 
 interface SmallNumberInputProps {
-  label: string
+  label?: string
   value: number
   onChange: (value: number) => void
+  className?: string
   small?: boolean
 }
 
@@ -14,7 +15,7 @@ const inputClasses =
   'text-5xl text-primary text-center cursor-pointer w-8 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none pointer-events-auto'
 const buttonClasses = 'text-5xl text-primary cursor-pointer pointer-events-auto'
 
-const SmallNumberInput = ({ label, value, onChange }: SmallNumberInputProps) => {
+const SmallNumberInput = ({ label, value, onChange, className }: SmallNumberInputProps) => {
   const id = useId()
   const [localValue, setLocalValue] = useState(String(value))
 
@@ -42,10 +43,12 @@ const SmallNumberInput = ({ label, value, onChange }: SmallNumberInputProps) => 
   }
 
   return (
-    <div className={baseClasses}>
-      <label htmlFor={id} className={labelClasses}>
-        {label}
-      </label>
+    <div className={`${baseClasses} ${className}`}>
+      {label && (
+        <label htmlFor={id} className={labelClasses}>
+          {label}
+        </label>
+      )}
       <div className={wrapperClasses}>
         <button
           className={buttonClasses}
