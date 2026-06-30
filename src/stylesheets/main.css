@@ -29,3 +29,8 @@
   --color-outline: var(--c-gray-300);
   --color-outline-inverse: var(--c-white);
 }
+
+:root {
+  --z-modal: 100;
+  --z-navigation: 200;
+}
