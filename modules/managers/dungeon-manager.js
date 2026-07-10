@@ -84,7 +84,9 @@ export class DungeonManager {
     const player = this.players.find((p) => p.uuid === playerData.uuid)
     if (!player) return
 
-    if (playerData.name !== undefined) player.name = playerData.name
+    if (playerData.name !== undefined && playerData.name !== player.name) {
+      player.setName(playerData.name)
+    }
     if (playerData.modifier !== undefined) player.modifier = playerData.modifier
     if (playerData.imageSrc !== undefined && playerData.imageSrc !== player.imageSrc) {
       player.setPicture(playerData.imageSrc)

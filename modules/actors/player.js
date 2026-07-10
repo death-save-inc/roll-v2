@@ -52,6 +52,17 @@ export class Player {
     return new Player(controller, 'Dungeon master', `player-${crypto.randomUUID()}`, null, 'dm')
   }
 
+  setName(newName) {
+    this.name = newName
+    if (this.card && typeof this.card.updateName === 'function') {
+      this.card.updateName(newName)
+    }
+    if (this.die && typeof this.die.updateName === 'function') {
+      this.die.updateName(newName)
+    }
+    this.saveUpdate()
+  }
+
   setPicture(url) {
     this.imageSrc = url
     // update card visual (but do not call setPicture again from the card)

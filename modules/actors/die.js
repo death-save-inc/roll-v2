@@ -189,6 +189,30 @@ export class Die {
     this.nameMesh.rotation.x = -Math.PI
   }
 
+  updateName(newName) {
+    if (!this.nameMesh) return
+
+    const texture = this.textRenderer.createTextTexture(
+      newName,
+      new THREE.Vector3(4, 1, 4),
+      1024,
+      250,
+      'jacquard12',
+    )
+
+    texture.flipX = true
+    texture.flipY = false
+    texture.needsUpdate = true
+    texture.wrapS = THREE.RepeatWrapping
+    texture.wrapT = THREE.RepeatWrapping
+    texture.repeat.set(-1, -1)
+    texture.rotation = Math.PI
+    texture.colorSpace = THREE.SRGBColorSpace
+
+    this.nameMesh.material.map = texture
+    this.nameMesh.material.needsUpdate = true
+  }
+
   setPosition(position) {
     if (this.dieParent) {
       this.dieParent.position.set(position.x, position.y, position.z)
