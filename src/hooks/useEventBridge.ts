@@ -51,6 +51,7 @@ export function useEventBridge({ state, setResults }: Options): void {
     }
 
     on('scene:ready', onSceneReady)
+    emit('ui:ready')
     return () => off('scene:ready', onSceneReady)
   }, [])
 

@@ -23,6 +23,12 @@ export class DungeonManager {
       this.updatePlayer(playerData)
     })
 
+    // React mounts after this runs, so it can't hear this initial emit.
+    // Re-emit once React signals it has subscribed.
+    EventBus.on('ui:ready', () => {
+      EventBus.emit('scene:ready')
+    })
+
     // Signal to the React UI that ThreeJS is ready for player events
     EventBus.emit('scene:ready')
   }
