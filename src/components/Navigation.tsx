@@ -1,6 +1,7 @@
 import { emit } from '../eventbus'
 import { usePlayerStore } from '../store/playerStore'
 import Button from './Button'
+import NumberInput from './NumberInput'
 import SmallNumberInput from './NumberInput'
 
 const Navigation = () => {
@@ -20,11 +21,10 @@ const Navigation = () => {
 
       <Button label={rollLabel} handleClick={handleRoll} />
 
-      <SmallNumberInput
+      <NumberInput
         value={state.dungeonMaster.modifier}
         label="DM Modifier"
         onChange={(v) => updateDM({ modifier: v })}
-        small
       />
     </nav>
   )

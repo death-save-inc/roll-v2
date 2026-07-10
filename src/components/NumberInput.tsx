@@ -1,21 +1,24 @@
 import { useEffect, useId, useState } from 'react'
 
-interface SmallNumberInputProps {
+interface NumberInputProps {
   label?: string
   value: number
   onChange: (value: number) => void
   className?: string
-  small?: boolean
+  variant?: 'text' | 'button'
 }
 
 const baseClasses = 'flex flex-col items-center'
 const labelClasses = 'text-primary text-2xl'
-const wrapperClasses = 'flex gap-2 items-center h-6'
+const wrapperClasses = 'flex gap-2 items-center w-full justify-between'
 const inputClasses =
   'text-5xl text-primary text-center cursor-pointer w-8 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none pointer-events-auto'
-const buttonClasses = 'text-5xl text-primary cursor-pointer pointer-events-auto'
+const variantButtonClasses = {
+  text: 'text-5xl text-primary cursor-pointer pointer-events-auto',
+  button: 'h-10 w-10 bg-primary text-primary-inverse text-2xl cursor-pointer pointer-events-auto',
+}
 
-const SmallNumberInput = ({ label, value, onChange, className }: SmallNumberInputProps) => {
+const NumberInput = ({ label, value, onChange, className, variant = 'text' }: NumberInputProps) => {
   const id = useId()
   const [localValue, setLocalValue] = useState(String(value))
 
@@ -51,7 +54,7 @@ const SmallNumberInput = ({ label, value, onChange, className }: SmallNumberInpu
       )}
       <div className={wrapperClasses}>
         <button
-          className={buttonClasses}
+          className={variantButtonClasses[variant]}
           type="button"
           aria-label={`Decrease ${label}`}
           onClick={() => step(-1)}
@@ -67,7 +70,7 @@ const SmallNumberInput = ({ label, value, onChange, className }: SmallNumberInpu
           className={inputClasses}
         />
         <button
-          className={buttonClasses}
+          className={variantButtonClasses[variant]}
           type="button"
           aria-label={`Increase ${label}`}
           onClick={() => step(1)}
@@ -79,4 +82,4 @@ const SmallNumberInput = ({ label, value, onChange, className }: SmallNumberInpu
   )
 }
 
-export default SmallNumberInput
+export default NumberInput
