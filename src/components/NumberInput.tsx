@@ -56,7 +56,7 @@ const NumberInput = ({ label, value, onChange, className, variant = 'text' }: Nu
         <button
           className={variantButtonClasses[variant]}
           type="button"
-          aria-label={`Decrease ${label}`}
+          aria-label={label ? `Decrease ${label}` : 'Decrease'}
           onClick={() => step(-1)}
         >
           -
@@ -72,7 +72,7 @@ const NumberInput = ({ label, value, onChange, className, variant = 'text' }: Nu
         <button
           className={variantButtonClasses[variant]}
           type="button"
-          aria-label={`Increase ${label}`}
+          aria-label={label ? `Increase ${label}` : 'Increase'}
           onClick={() => step(1)}
         >
           +

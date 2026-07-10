@@ -2,7 +2,6 @@ import { emit } from '../eventbus'
 import { usePlayerStore } from '../store/playerStore'
 import Button from './Button'
 import NumberInput from './NumberInput'
-import SmallNumberInput from './NumberInput'
 
 const Navigation = () => {
   const { state, openModal, closeModal, updateDM } = usePlayerStore()
