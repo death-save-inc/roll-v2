@@ -3,7 +3,6 @@
 @import './colors.css';
 
 @theme {
-  --font-sans: 'RuneScape Chat', sans-serif;
   --font-serif: 'Jacquard 12', serif;
   --font-charted: 'Jacquard 12 Charted', serif;
 
