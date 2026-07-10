@@ -10,10 +10,10 @@ import { useLocalStorage } from './hooks/useLocalStorage'
 import { PlayerProvider, usePlayerStore } from './store/playerStore'
 
 function AppContent() {
-  const { state, setResults, hydrate, openModal, closeModal, updateDM } = usePlayerStore()
+  const { state, setResults, openModal, closeModal, updateDM } = usePlayerStore()
 
-  // Persist & hydrate localStorage
-  useLocalStorage(state, hydrate)
+  // Persist localStorage
+  useLocalStorage(state)
 
   // Bridge React state ↔ ThreeJS EventBus
   useEventBridge({ state, setResults })

@@ -24,7 +24,6 @@ type Action =
   | { type: 'SET_RESULTS'; results: Player[] }
   | { type: 'OPEN_MODAL' }
   | { type: 'CLOSE_MODAL' }
-  | { type: 'HYDRATE'; state: PlayerState }
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -48,6 +47,20 @@ const initialState: PlayerState = {
   results: [],
   modalOpen: false,
   hasRolled: false,
+}
+
+const STORAGE_KEY = 'rfi-players'
+
+// Read synchronously on first render so React never renders (and pushes to
+// ThreeJS) the default state before swapping it for saved data a moment later.
+function loadInitialState(): PlayerState {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (raw) return JSON.parse(raw) as PlayerState
+  } catch {
+    // Ignore corrupt data
+  }
+  return initialState
 }
 
 // ---------------------------------------------------------------------------
@@ -94,10 +107,6 @@ function reducer(state: PlayerState, action: Action): PlayerState {
       return { ...state, modalOpen: false }
     }
 
-    case 'HYDRATE': {
-      return action.state
-    }
-
     default:
       return state
   }
@@ -115,7 +124,6 @@ interface PlayerContextValue {
   setResults: (results: Player[]) => void
   openModal: () => void
   closeModal: () => void
-  hydrate: (state: PlayerState) => void
 }
 
 const PlayerContext = createContext<PlayerContextValue | null>(null)
@@ -124,7 +132,7 @@ const PlayerContext = createContext<PlayerContextValue | null>(null)
 // Provider
 // ---------------------------------------------------------------------------
 export function PlayerProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, initialState)
+  const [state, dispatch] = useReducer(reducer, undefined, loadInitialState)
 
   const addPlayer = useCallback(() => dispatch({ type: 'ADD_PLAYER' }), [])
   const deletePlayer = useCallback((id: string) => dispatch({ type: 'DELETE_PLAYER', id }), [])
@@ -139,7 +147,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   )
   const openModal = useCallback(() => dispatch({ type: 'OPEN_MODAL' }), [])
   const closeModal = useCallback(() => dispatch({ type: 'CLOSE_MODAL' }), [])
-  const hydrate = useCallback((s: PlayerState) => dispatch({ type: 'HYDRATE', state: s }), [])
 
   return (
     <PlayerContext.Provider
@@ -152,7 +159,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         setResults,
         openModal,
         closeModal,
-        hydrate,
       }}
     >
       {children}
