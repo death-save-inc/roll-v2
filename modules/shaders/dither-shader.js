@@ -1,16 +1,16 @@
-import * as THREE from 'three';
+import * as THREE from 'three'
 
 export const DitherShader = {
-    uniforms: {
-        textureSampler: { value: null },
-        resolution: new THREE.Uniform(new THREE.Vector2(window.innerWidth, window.innerHeight)),
-        bias: { value: 0.4 },
-        excludedColor: { value: new THREE.Vector3(1,1,1) },
-        tolerance: { value: 0.05 },
-        uTime: { value: 0 }
-    },
+  uniforms: {
+    textureSampler: { value: null },
+    resolution: new THREE.Uniform(new THREE.Vector2(window.innerWidth, window.innerHeight)),
+    bias: { value: 0.4 },
+    excludedColor: { value: new THREE.Vector3(1, 1, 1) },
+    tolerance: { value: 0.05 },
+    uTime: { value: 0 },
+  },
 
-    vertexShader: /* glsl */`
+  vertexShader: /* glsl */ `
         varying vec2 vUv;
         void main() {
             vUv = uv;
@@ -18,7 +18,7 @@ export const DitherShader = {
         }
     `,
 
-    fragmentShader: /* glsl */`
+  fragmentShader: /* glsl */ `
         precision highp float;
 
         uniform float bias;
@@ -79,5 +79,5 @@ export const DitherShader = {
             color.rgb = orderedDither(vUv, color.rgb);
             gl_FragColor = color;
         }
-    `
-};
+    `,
+}

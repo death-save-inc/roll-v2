@@ -1,0 +1,35 @@
+@import 'tailwindcss';
+@import './fonts.css';
+@import './colors.css';
+
+@theme {
+  --font-serif: 'Jacquard 12', serif;
+  --font-charted: 'Jacquard 12 Charted', serif;
+
+  --color-*: initial;
+}
+
+@theme inline {
+  --color-primary: var(--c-yellow);
+  --color-primary-inverse: var(--c-black);
+  --color-primary-disabled: var(--c-yellow-100);
+
+  --color-secondary: var(--c-gray-600);
+  --color-tertiary: var(--c-gray-300);
+
+  --color-content: var(--c-white);
+  --color-content-inverse: var(--c-black);
+  --color-content-disabled: var(--c-gray-600);
+
+  --color-surface: var(--c-blue-900);
+  --color-surface-inverse: var(--c-white);
+  --color-surface-strong: var(--c-black);
+
+  --color-outline: var(--c-gray-300);
+  --color-outline-inverse: var(--c-white);
+}
+
+:root {
+  --z-modal: 100;
+  --z-navigation: 200;
+}
